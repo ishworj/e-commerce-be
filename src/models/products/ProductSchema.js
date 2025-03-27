@@ -1,0 +1,38 @@
+import mongoose, { Mongoose } from "mongoose";
+
+const ProductSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      maxlength: 500,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    stock: {
+      type: Number,
+      default: 0,
+    },
+    category: {
+      type: mongoose.Types.ObjectId,
+      ref: "Category",
+    },
+    images: [String],
+
+    ratings: [Number],
+    reviews: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Product", ProductSchema);
