@@ -1,15 +1,28 @@
 import express from "express";
+import morgan from "morgan";
+import cors from "cors"
 import { connectDB } from "./src/config/mongoDbConfig.js";
+import authRouter from "./src/routers/authRouter.js"
 
 const app = express();
 const PORT = process.env.PORT;
 
-// Run server here
+// log middleware
+if (process.env.NODE_ENV !== "production") {
+  app.use(morgan("dev"))
+} else {
+  app.use(morgan("combined"))
+}
 
-// app.use("/api/v1/auth", authRouter);
+// Run server here
+app.use(express.json())
+
+app.use(cors())
+// routers
+app.use("/api/v1/auth", authRouter);
+
 
 // listen the server
-
 const startServer = async () => {
   try {
     await connectDB();
