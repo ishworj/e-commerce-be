@@ -83,3 +83,7 @@ export const signInUserController = async (req, res, next) => {
         console.log(error)
     }
 }
+
+// TODO //edit the user
+
+// TODO// delete the user

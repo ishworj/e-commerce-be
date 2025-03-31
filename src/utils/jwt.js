@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken"
+import { insertSession } from "../models/sessions/SessionModel.js";
 
 // creating a token
 export const jwtSign = (tokenData) => {
     const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
-    // TODO add one more line of code to store the token in the session data collection in the database
+    insertSession({ token })
     return token;
 
 }
