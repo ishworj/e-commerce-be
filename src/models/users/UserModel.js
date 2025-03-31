@@ -7,5 +7,5 @@ export const registerUserModel = (formObj) => {
 
 // finding user by email
 export const getUserByEmail = (email) => {
-    return UserSchema.find({ email })
+    return UserSchema.find(email)
 }
