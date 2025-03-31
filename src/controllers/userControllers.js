@@ -43,8 +43,8 @@ export const signInUserController = async (req, res, next) => {
         if (user) {
             // comparing the password or say checking if the user's password matches with the password stored in database 
 
-            console.log(user[0].password)
-            const isLogged = await comparePassword(password, (user[0].password));
+            console.log(user.password)
+            const isLogged = await comparePassword(password, (user.password));
             console.log(isLogged, 433)
             // token data for creating accessToken and refreshToken
             const tokenData = {
