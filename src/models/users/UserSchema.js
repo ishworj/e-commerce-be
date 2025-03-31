@@ -23,7 +23,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
+    confirmPassword: {
+      type: String,
+      required: true
+    },
     role: {
       type: String,
       enum: ["admin", "customer"],
@@ -42,4 +45,4 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model("user", UserSchema);
