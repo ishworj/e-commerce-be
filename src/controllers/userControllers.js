@@ -7,16 +7,13 @@ export const registerUserController = async (req, res, next) => {
     try {
         const { fName, lName, email } = req.body;
         let { password } = req.body
-        let { confirmPassword } = req.body
         password = await encryptPassword(password)
-        confirmPassword = await encryptPassword(confirmPassword)
 
         const formObj = {
             fName,
             lName,
             email,
             password,
-            confirmPassword
         }
         const data = await registerUserModel(formObj);
 
