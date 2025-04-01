@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { connectDB } from "./src/config/mongoDbConfig.js";
+
 import authRouter from "./src/routers/authRouter.js";
 import productRouter from "./src/routers/productRouter.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";

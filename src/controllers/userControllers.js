@@ -13,6 +13,7 @@ export const registerUserController = async (req, res, next) => {
             fName,
             lName,
             email,
+            phone,
             password,
             phone
         }
@@ -28,6 +29,9 @@ export const registerUserController = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error)
+        next({
+            message: "error in regestirartion"
+        })
     }
 }
 
@@ -36,6 +40,7 @@ export const signInUserController = async (req, res, next) => {
     try {
         // taking the payload from the req.body 
         const { email, password } = req.body
+        console.log(req.body)
         // finding the user 
         const user = await getUserByEmail({ email })
         if (user) {
