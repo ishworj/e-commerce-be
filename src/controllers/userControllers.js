@@ -5,7 +5,7 @@ import { jwtRefreshSign, jwtSign } from "../utils/jwt.js";
 // registering the new user 
 export const registerUserController = async (req, res, next) => {
     try {
-        const { fName, lName, email } = req.body;
+        const { fName, lName, email, phone } = req.body;
         let { password } = req.body
         password = await encryptPassword(password)
 
@@ -13,6 +13,7 @@ export const registerUserController = async (req, res, next) => {
             fName,
             lName,
             email,
+            phone,
             password,
         }
         const data = await registerUserModel(formObj);
@@ -27,6 +28,9 @@ export const registerUserController = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error)
+        next({
+            message: "error in regestirartion"
+        })
     }
 }
 
@@ -35,6 +39,7 @@ export const signInUserController = async (req, res, next) => {
     try {
         // taking the payload from the req.body 
         const { email, password } = req.body
+        console.log(req.body)
         // finding the user 
         const user = await getUserByEmail({ email })
         if (user) {

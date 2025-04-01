@@ -3,6 +3,7 @@ import morgan from "morgan";
 import cors from "cors"
 import { connectDB } from "./src/config/mongoDbConfig.js";
 import authRouter from "./src/routers/authRouter.js"
+import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -22,6 +23,7 @@ app.use(cors())
 // routers
 app.use("/api/v1/auth", authRouter);
 
+app.use(errorHandler);
 
 // listen the server
 const startServer = async () => {
