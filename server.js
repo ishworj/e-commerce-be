@@ -1,27 +1,32 @@
 import express from "express";
 import morgan from "morgan";
-import cors from "cors"
+import cors from "cors";
 import { connectDB } from "./src/config/mongoDbConfig.js";
-import authRouter from "./src/routers/authRouter.js"
+import authRouter from "./src/routers/authRouter.js";
+import productRouter from "./src/routers/productRouter.js";
+import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const app = express();
 const PORT = process.env.PORT;
 
 // log middleware
 if (process.env.NODE_ENV !== "production") {
-  app.use(morgan("dev"))
+  app.use(morgan("dev"));
 } else {
-  app.use(morgan("combined"))
+  app.use(morgan("combined"));
 }
 
-//  hello this is the example 
+//  hello this is the example
 // Run server here
-app.use(express.json())
+app.use(express.json());
 
-app.use(cors())
+app.use(cors());
 // routers
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/products", productRouter);
 
+// error handler
+app.use(errorHandler);
 
 // listen the server
 const startServer = async () => {

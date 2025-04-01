@@ -5,7 +5,7 @@ import { jwtRefreshSign, jwtSign } from "../utils/jwt.js";
 // registering the new user 
 export const registerUserController = async (req, res, next) => {
     try {
-        const { fName, lName, email } = req.body;
+        const { fName, lName, email , phone} = req.body;
         let { password } = req.body
         password = await encryptPassword(password)
 
@@ -14,6 +14,7 @@ export const registerUserController = async (req, res, next) => {
             lName,
             email,
             password,
+            phone
         }
         const data = await registerUserModel(formObj);
 
