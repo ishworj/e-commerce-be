@@ -3,8 +3,8 @@ import Joi from "joi";
 const joiValidator = async (schema, req, res, next) => {
     // validating the given schema
     const { error } = schema.validate(req.body)
-    error ? res.status(400).json({
-        status: "error",
+    error ? next({
+        statusCode: 400,
         message: error.message
     }) : next()
 }
