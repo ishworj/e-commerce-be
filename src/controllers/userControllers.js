@@ -5,7 +5,7 @@ import { jwtRefreshSign, jwtSign } from "../utils/jwt.js";
 // registering the new user 
 export const registerUserController = async (req, res, next) => {
     try {
-        const { fName, lName, email , phone} = req.body;
+        const { fName, lName, email, phone } = req.body;
         let { password } = req.body
         password = await encryptPassword(password)
 
@@ -57,10 +57,18 @@ export const signInUserController = async (req, res, next) => {
             const token = await jwtSign(tokenData)
             const refreshToken = await jwtRefreshSign(tokenData)
 
-            const data = {
-                email: user.email,
-                refreshJWT: refreshToken
-            }
+            const data = await updateUser(
+                {
+                    email: user.email
+                },
+                {
+                    refreshJWT: refreshToken
+                }
+            )
+
+            // removing the sensitive user data
+            user.password = ""
+            user.refreshJWT = ""
 
             if (isLogged) {
                 return res.status(200).json({
@@ -90,29 +98,29 @@ export const signInUserController = async (req, res, next) => {
 // TODO //edit the user
 
 export const updateUserController = async (req, res, next) => {
-    try{
+    try {
 
-const id = req.params.id
-        const {formObj}= req.body
+        const id = req.params.id
+        const { formObj } = req.body
         if (!id) {
             return res.status(400).json({ status: "error", message: "User ID is required" });
         }
-const updatedUser = await updateUser(id , formObj);
-updatedUser?._id
- ? res.json({
-    status:"success",
-    message:"User updated successfully",
-}):next({
-    status:"error",
-    message:"User not found",
-})
-        
+        const updatedUser = await updateUser(id, formObj);
+        updatedUser?._id
+            ? res.json({
+                status: "success",
+                message: "User updated successfully",
+            }) : next({
+                status: "error",
+                message: "User not found",
+            })
 
-    }catch(error){
+
+    } catch (error) {
         console.log(error)
         next({
-            status:"error",
-            message:"Internal server error",
+            status: "error",
+            message: "Internal server error",
         })
     }
 }
@@ -130,8 +138,8 @@ export const deleteUserController = async (req, res, next) => {
             return res.status(400).json({ status: "error", message: "User ID is required" });
         }
 
-        const deleteUser = await deleteUserById( userId)
-        
+        const deleteUser = await deleteUserById(userId)
+
         deleteUser?._id ? res.json({
             status: "success",
             message: "User deleted successfully",
@@ -142,7 +150,7 @@ export const deleteUserController = async (req, res, next) => {
 
 
 
-}catch (error) {
+    } catch (error) {
         console.log(error)
         next({
             status: "error",

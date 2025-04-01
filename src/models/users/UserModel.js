@@ -13,8 +13,8 @@ export const getUserByEmail = (email) => {
 
 
 //update user 
-export const updateUser = (_id, formObj)=>{
-    return UserSchema.findByIdAndUpdate(_id, formObj, { new: true })
+export const updateUser = (filter, formObj) => {
+    return UserSchema.findByIdAndUpdate(filter, formObj, { new: true })
 }
 
 

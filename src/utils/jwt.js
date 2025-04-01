@@ -18,9 +18,7 @@ export const jwtRefreshSign = (tokenData) => {
 
     return refreshJWT
 }
-
 // verifying the refreshToken
-
 export const refreshJWTVerify = (refreshJWT) => {
     return jwt.verify(refreshJWT, process.env, JWT_REFRESH_SECRET)
 }
