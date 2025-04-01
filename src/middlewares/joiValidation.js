@@ -46,8 +46,7 @@ export const updateUserValidator = async (req, res, next) => {
 
 // creating product validator
 export const createProductValidator = async (req, res, next) => {
-    console.log("sdkfhk")
-    const addProductValidator = Joi.object({
+    const addProductSchema = Joi.object({
         name: Joi.string().required(),
         description: Joi.string().required(),
         price: Joi.number().required(),
@@ -57,12 +56,20 @@ export const createProductValidator = async (req, res, next) => {
         ratings: Joi.number().required(),
         reviews: Joi.string().required(),
     })
-    joiValidator(addProductValidator, req, res, next)
+    joiValidator(addProductSchema, req, res, next)
 }
 
 // updating product validator
-// export const updateProductValidator = async (req, res, next) => {
-
-// }
+export const updateProductValidator = async (req, res, next) => {
+    const updateProductSchema = Joi.object({
+        name: Joi.string().required(),
+        description: Joi.string().required(),
+        price: Joi.number().required(),
+        stock: Joi.number().required(),
+        category: Joi.string().required(),
+        images: Joi.string().required(),
+    })
+    joiValidator(updateProductSchema, req, res, next)
+}
 
 

@@ -40,6 +40,39 @@ export const authenticate = async (req, res, next) => {
         })
     }
 }
+export const refreshAuthenticate = async (req, res, next) => {
+    try {
+        // take the token from the header as authorization
+        const token = req.headers.authorization;
+        // verify the refreshtoken
+        const decodedData = await refreshJWTVerify(token, process.env.JWT_REFRESH_SECRET)
+
+        // checking if the token gets verified and if there is token
+        if (decodedData?.email) {
+            // find the user
+            const userData = await getUserByEmail({ email });
+            if (userData && userData.refreshJWT == token) {
+                req.user = userData;
+                next()
+            } else {
+                next({
+                    statusCode: 401,
+                    message: "Not Authenticated !!!"
+                })
+            }
+        } else {
+            next({
+                statusCode: 401,
+                message: "Invalid Token!!!"
+            })
+        }
+    } catch (error) {
+        next({
+            statusCode: 500,
+            message: error?.message || "Internal Error in verifying the token!!!"
+        })
+    }
+}
 export const isAdmin = () => {
     if (req.userData.role === "admin") {
         next()
