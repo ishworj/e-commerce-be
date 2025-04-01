@@ -3,11 +3,12 @@ import Joi from "joi";
 const joiValidator = async (schema, req, res, next) => {
     // validating the given schema
     const { error } = schema.validate(req.body)
-    error ? next({
+    error ? res.status(400).json({
         status: "error",
         message: error.message
     }) : next()
 }
+
 
 // creating user validator
 export const createUserValidator = async (req, res, next) => {
@@ -45,6 +46,7 @@ export const updateUserValidator = async (req, res, next) => {
 
 // creating product validator
 export const createProductValidator = async (req, res, next) => {
+    console.log("sdkfhk")
     const addProductValidator = Joi.object({
         name: Joi.string().required(),
         description: Joi.string().required(),
@@ -55,6 +57,7 @@ export const createProductValidator = async (req, res, next) => {
         ratings: Joi.number().required(),
         reviews: Joi.string().required(),
     })
+    joiValidator(addProductValidator, req, res, next)
 }
 
 // updating product validator

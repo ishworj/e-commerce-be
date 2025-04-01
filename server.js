@@ -6,6 +6,8 @@ import { connectDB } from "./src/config/mongoDbConfig.js";
 import authRouter from "./src/routers/authRouter.js";
 import productRouter from "./src/routers/productRouter.js";
 import { errorHandler } from "./src/middlewares/errorHandler.js";
+import authRouter from "./src/routers/authRouter.js"
+import productRouter from "./src/routers/productRouter.js"
 
 const app = express();
 const PORT = process.env.PORT;
