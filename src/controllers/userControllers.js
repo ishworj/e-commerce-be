@@ -1,22 +1,20 @@
-import { getUserByEmail, registerUserModel } from "../models/users/UserModel.js";
+import { deleteUserById, getUserByEmail, registerUserModel, updateUser } from "../models/users/UserModel.js";
 import { comparePassword, encryptPassword } from "../utils/bcrypt.js";
 import { jwtRefreshSign, jwtSign } from "../utils/jwt.js";
 
 // registering the new user 
 export const registerUserController = async (req, res, next) => {
     try {
-        const { fName, lName, email } = req.body;
+        const { fName, lName, email , phone} = req.body;
         let { password } = req.body
-        let { confirmPassword } = req.body
         password = await encryptPassword(password)
-        confirmPassword = await encryptPassword(confirmPassword)
 
         const formObj = {
             fName,
             lName,
             email,
             password,
-            confirmPassword
+            phone
         }
         const data = await registerUserModel(formObj);
 
@@ -86,4 +84,78 @@ export const signInUserController = async (req, res, next) => {
 
 // TODO //edit the user
 
+export const updateUserController = async (req, res, next) => {
+    try{
+
+const id = req.params.id
+        const {formObj}= req.body
+        if (!id) {
+            return res.status(400).json({ status: "error", message: "User ID is required" });
+        }
+const updatedUser = await updateUser(id , formObj);
+updatedUser?._id
+ ? res.json({
+    status:"success",
+    message:"User updated successfully",
+}):next({
+    status:"error",
+    message:"User not found",
+})
+        
+
+    }catch(error){
+        console.log(error)
+        next({
+            status:"error",
+            message:"Internal server error",
+        })
+    }
+}
+
+
+
+
 // TODO// delete the user
+export const deleteUserController = async (req, res, next) => {
+    try {
+        const userId = req.params.id
+
+        console.log(userId, 444)
+        if (!userId) {
+            return res.status(400).json({ status: "error", message: "User ID is required" });
+        }
+
+        const deleteUser = await deleteUserById( userId)
+        
+        deleteUser?._id ? res.json({
+            status: "success",
+            message: "User deleted successfully",
+        }) : next({
+            status: "error",
+            message: "User not found",
+        })
+
+
+
+}catch (error) {
+        console.log(error)
+        next({
+            status: "error",
+            message: "Internal server error",
+        })
+    }
+}
+
+
+// //get user detail
+// export const getUserDetailController = async (req, res, next) => {
+//     //removing sensitive data
+//     req.userData.password= ""
+//     req.userData.refreshJWT=""
+
+//     return res.json({
+//         status: "success",
+//         message: "User details",
+//         data: req.userData
+//     })
+// }

@@ -9,3 +9,16 @@ export const registerUserModel = (formObj) => {
 export const getUserByEmail = (email) => {
     return UserSchema.findOne(email)
 }
+
+
+
+//update user 
+export const updateUser = (_id, formObj)=>{
+    return UserSchema.findByIdAndUpdate(_id, formObj, { new: true })
+}
+
+
+//delete user by id
+export const deleteUserById = (_id) => {
+    return UserSchema.findByIdAndDelete(_id)
+}
