@@ -7,5 +7,9 @@ export const getAllPoductsDB = () => {
   return ProductSchema.find({});
 };
 export const updateProductDB = (id, updateObj) => {
-  return ProductSchema.findByIdAndUpdate(id, updateObj);
+  return ProductSchema.findByIdAndUpdate(id, updateObj, { new: true });
+};
+
+export const deleteProductDB = (id) => {
+  return ProductSchema.findByIdAndDelete(id);
 };
