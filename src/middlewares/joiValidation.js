@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const joiValidator = async (schema, req, res, next){
+const joiValidator = async (schema, req, res, next) => {
     // validating the given schema
     const { error } = schema.validate(req.body)
     error ? next({
