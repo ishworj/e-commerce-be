@@ -17,56 +17,48 @@ export const registerUserController = async (req, res, next) => {
             lName,
             email,
             phone,
-            password,
-            phone
+            password
         }
         const user = await registerUserModel(formObj);
 
         console.log(user, 333)
-        if (user?._id) {
-
-            const session = await insertSession({
-                token: uuidv4(),
-                association: user.email
-            })
-            if (!session._id) {
-                next({
-                    statusCode: 400,
-                    message: "Email sending failed! Registration Aborted!",
-                    errorMessage: error?.message
-                })
-            }
-            if (session?._id) {
-                const url = `${process.env.ROOT_URL}/verify-user?sessionId=${session._id}&t=${session.token}`;
-
-                const activationEmail = await userActivatedEmail({
-                    email: user.email,
-                    userName: user.fName,
-                    url
-                })
-
-                activationEmail ? next({
-                    statusCode: 200,
-                    message: "Your account has been created Successfully, please check your email to activate your account!",
-                    user
-                }) : next({
-                    statusCode: 400,
-                    message: "Verification Failed!",
-                    errorMessage: error?.message
-                })
-            }
-
-        }
-        else {
+        if (!user?._id) {
             return res.status(401).json({
-                message: error?.message,
-                status: "error"
+                status: "error",
+                message: "User Registration Failed!!!"
             })
         }
+
+        const session = await insertSession({
+            token: uuidv4(),
+            association: user.email
+        })
+        if (!session._id) {
+            return res.status(400).json({
+                status: "error",
+                message: "Email sending failed! Registration aborted!"
+            });
+        }
+        const url = `${process.env.ROOT_URL}/verify-user?sessionId=${session._id}&t=${session.token}`;
+
+        const activationEmail = await userActivatedEmail({
+            email: user.email,
+            userName: user.fName,
+            url
+        })
+
+        return res.status(200).json({
+            status: "success",
+            message: "Your account has been created successfully. Please check your email to activate your account!",
+            user
+        });
+
+
     } catch (error) {
         console.log(error)
         next({
-            message: "error in regestirartion",
+            statusCode: 500,
+            message: "Error in regestiration",
             errorMessage: error?.message
         })
     }
