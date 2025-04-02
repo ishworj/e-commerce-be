@@ -6,11 +6,11 @@ export const userActivatedEmailTempalate = ({ email, userName, url }) => {
         to: email, // list of receivers
         subject: "Action Required! Activate your Account!", // Subject line
         text: `Click the url to activate your Account. ${url}`, // plain text body
-        html: `<div style = "display: flex;flex-direction:column;align-items:center; justify-content:center;">
+        html: `<div style="max-width: 600px; margin: auto; text-align: center; font-family: Arial, sans-serif;">
         <h1>Hello, ${userName}</h1>
             <br />
             <p>Your account has been created. Click the button to Activate your account.</p>
-            <a href=${url}><button style="color: white; background : blue; padding: 1rem"; border-radius: 10px>Activate Now</button></a>
+            <a href=${url}><button style="color: white; background : blue; padding: 1rem; border-radius: 10px;">Activate Now</button></a>
             <br />
             <br />
             <p>Regards,</p>
