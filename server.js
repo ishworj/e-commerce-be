@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB } from "./src/config/mongoDbConfig.js";
 import authRouter from "./src/routers/authRouter.js"
 import productRouter from "./src/routers/productRouter.js"
+import categoryRouter from "./src/routers/categoryRouter.js"
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(cors());
 // routers
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", productRouter);
+app.use("/api/v1/category", categoryRouter)
 
 // error handler
 app.use(errorHandler);
