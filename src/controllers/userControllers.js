@@ -1,3 +1,4 @@
+import { startSession } from "mongoose";
 import { insertSession } from "../models/sessions/SessionModel.js";
 import { deleteUserById, getUserByEmail, registerUserModel, updateUser } from "../models/users/UserModel.js";
 import { userActivatedEmail } from "../services/emailServices.js";
@@ -77,13 +78,15 @@ export const signInUserController = async (req, res, next) => {
     try {
         // taking the payload from the req.body 
         const { email, password } = req.body
-        console.log(req.body)
         // finding the user 
         const user = await getUserByEmail({ email })
-        if (user) {
+        if (!user) {
+            return res.status(404).json({
+                status: "error",
+                message: "Couldnot find the user!",
+            })
+        } else {
             // comparing the password or say checking if the user's password matches with the password stored in database 
-
-            console.log(user.password)
             const isLogged = await comparePassword(password, (user.password));
             console.log(isLogged, 433)
             // token data for creating accessToken and refreshToken
@@ -96,7 +99,7 @@ export const signInUserController = async (req, res, next) => {
 
             const data = await updateUser(
                 {
-                    email: user.email
+                    _id: user._id
                 },
                 {
                     refreshJWT: refreshToken
@@ -108,6 +111,8 @@ export const signInUserController = async (req, res, next) => {
             user.refreshJWT = ""
 
             if (isLogged) {
+
+                req.userData = user;
                 return res.status(200).json({
                     status: "success",
                     message: "Logged in Successfully!!!",
@@ -129,6 +134,11 @@ export const signInUserController = async (req, res, next) => {
 
     } catch (error) {
         console.log(error)
+        next({
+            statusCode: 500,
+            message: "Internal error!",
+            statusMessage: error.message
+        })
     }
 }
 
@@ -137,12 +147,16 @@ export const signInUserController = async (req, res, next) => {
 export const updateUserController = async (req, res, next) => {
     try {
 
-        const id = req.params.id
-        const { formObj } = req.body
+        // const { _id } = req.params
+        const { _id, ...formObj } = req.body
         if (!id) {
-            return res.status(400).json({ status: "error", message: "User ID is required" });
+            return res.status(400).json({
+                status: "error",
+                message: "User ID is required"
+            }
+            );
         }
-        const updatedUser = await updateUser(id, formObj);
+        const updatedUser = await updateUser(_id, formObj);
         updatedUser?._id
             ? res.json({
                 status: "success",

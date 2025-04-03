@@ -1,4 +1,4 @@
-import { createCategoryModel, deleteCategoryModel } from "../models/categories/CategoryModel.js"
+import { createCategoryModel, deleteCategoryModel, updatingCategoryModel } from "../models/categories/CategoryModel.js"
 
 // creating the category
 export const insertCategoryController = async (req, res, next) => {
@@ -29,6 +29,32 @@ export const insertCategoryController = async (req, res, next) => {
 // updating the category
 export const updateCategoryController = async (req, res, next) => {
     try {
+        const { _id } = req.params;
+        console.log(req.body)
+
+        if (!_id) {
+            next({
+                statusCode: 400,
+                message: "Category Id is required!",
+                errorMessage: "Category id is not received!"
+            })
+        }
+        const updateObj = req.body;
+        const updatedCategory = await updatingCategoryModel(_id, { ...updateObj })
+
+        if (!updatedCategory) {
+            next({
+                statusCode: 404,
+                message: "Couldnot update the category! Category Id wrong",
+                errorMessage: "Category Not updated! Category Id Wrong"
+            })
+        } else {
+            res.status(200).json({
+                status: "success",
+                message: "Successfully! Updated the name of the category.",
+                updatedCategory
+            })
+        }
 
     } catch (error) {
         next({

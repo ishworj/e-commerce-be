@@ -13,11 +13,10 @@ router.post("/signin", signInUserController)
 // router.get("/", getUserDetail);
 
 
-
 //update user
-router.put("/:id", updateUserController)
+router.put("/:_id", updateUserController)
 
 //delete user
-router.delete("/:id", deleteUserController)
+router.delete("/:_id", deleteUserController)
 
 export default router
