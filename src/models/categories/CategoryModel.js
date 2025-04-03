@@ -11,6 +11,6 @@ export const updatingCategoryModel = (filter, obj) => {
 }
 
 // deleting a category
-export const deleteCategoryModel = (id) => {
-    return CategorySchema.findByIdAndDelete(id)
+export const deleteCategoryModel = (_id) => {
+    return CategorySchema.findByIdAndDelete(_id, { new: true })
 }

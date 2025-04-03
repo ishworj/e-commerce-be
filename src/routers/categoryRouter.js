@@ -1,5 +1,5 @@
 import express from "express"
-import { insertCategoryController } from "../controllers/categoriesController.js";
+import { deleteCategoryController, insertCategoryController } from "../controllers/categoriesController.js";
 
 const router = express.Router()
 
@@ -12,5 +12,6 @@ router.post("/", insertCategoryController)
 // updating a category
 
 // deleting a category
+router.delete("/delete/:_id", deleteCategoryController)
 
 export default router;
