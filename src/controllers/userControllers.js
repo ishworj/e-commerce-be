@@ -141,10 +141,10 @@ export const updateUserController = async (req, res, next) => {
 
         // const { _id } = req.params
         const { _id, ...formObj } = req.body
-        if (!id) {
+        if (!_id) {
             return res.status(400).json({
                 status: "error",
-                message: "User ID is required"
+                message: "User not found"
             }
             );
         }
@@ -153,9 +153,10 @@ export const updateUserController = async (req, res, next) => {
             ? res.json({
                 status: "success",
                 message: "User updated successfully",
+                updatedUser
             }) : next({
                 status: "error",
-                message: "User not found",
+                message: "Couldnot Update the user",
             })
 
 
@@ -174,30 +175,28 @@ export const updateUserController = async (req, res, next) => {
 // TODO// delete the user
 export const deleteUserController = async (req, res, next) => {
     try {
-        const userId = req.params.id
+        const { _id } = req.params
 
-        console.log(userId, 444)
-        if (!userId) {
+        if (!_id) {
             return res.status(400).json({ status: "error", message: "User ID is required" });
         }
 
-        const deleteUser = await deleteUserById(userId)
+        const deletedUser = await deleteUserById(_id)
 
-        deleteUser?._id ? res.json({
+        deletedUser?._id ? res.json({
             status: "success",
             message: "User deleted successfully",
+            deletedUser
         }) : next({
             status: "error",
             message: "User not found",
         })
-
-
-
     } catch (error) {
         console.log(error)
         next({
-            status: "error",
+            statusCode: 500,
             message: "Internal server error",
+            errorMessage: error?.message
         })
     }
 }

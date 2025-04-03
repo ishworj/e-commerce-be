@@ -20,5 +20,5 @@ export const updateUser = (filter, formObj) => {
 
 //delete user by id
 export const deleteUserById = (_id) => {
-    return UserSchema.findByIdAndDelete(_id)
+    return UserSchema.findByIdAndDelete(_id, { new: true })
 }

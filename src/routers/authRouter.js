@@ -1,5 +1,6 @@
 import express from "express";
 import { deleteUserController, registerUserController, signInUserController, updateUserController } from "../controllers/userControllers.js";
+import { authenticate, isAdmin } from "../middlewares/authMiddleware.js";
 
 const router = express.Router()
 
@@ -14,9 +15,9 @@ router.post("/signin", signInUserController)
 
 
 //update user
-router.put("/:_id", updateUserController)
+router.put("/", authenticate, updateUserController)
 
 //delete user
-router.delete("/:_id", deleteUserController)
+router.delete("/:_id", authenticate, isAdmin, deleteUserController)
 
 export default router
