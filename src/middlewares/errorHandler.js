@@ -5,7 +5,7 @@ export const errorHandler = (err, req, res, next) => {
 
     if (message.includes("E11000")) {
         statusCode = 400,
-            message = "DUPLICATE USER !"
+            message = "DUPLICATE !!"
     }
 
     return res.status(statusCode).send({
