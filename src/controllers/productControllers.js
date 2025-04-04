@@ -7,7 +7,6 @@ import {
 
 export const createProduct = async (req, res, next) => {
   try {
-    console.log("controller")
     const product = await createNewPoductDB(req.body);
 
     if (product?._id) {

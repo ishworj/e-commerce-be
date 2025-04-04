@@ -1,18 +1,20 @@
 import express from "express";
-import { deleteUserController, registerUserController, signInUserController, updateUserController } from "../controllers/userControllers.js";
+import { deleteUserController, getUserDetailController, registerUserController, signInUserController, updateUserController } from "../controllers/userControllers.js";
 import { authenticate, isAdmin } from "../middlewares/authMiddleware.js";
+import { createUserValidator, singinUserValidator } from "../middlewares/joiValidation.js";
 
 const router = express.Router()
 
 // routers
-router.post("/register", registerUserController)
-router.post("/signin", signInUserController)
 
+// registering the user
+router.post("/register", createUserValidator, registerUserController)
 
+// signing the user
+router.post("/signin", singinUserValidator, signInUserController)
 
-// // get user detail
-// router.get("/", getUserDetail);
-
+// get user detail
+router.get("/", authenticate, getUserDetailController);
 
 //update user
 router.put("/", authenticate, updateUserController)

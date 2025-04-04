@@ -17,6 +17,7 @@ export const createUserValidator = async (req, res, next) => {
         fName: Joi.string().required(),
         lName: Joi.string().required(),
         password: Joi.string().required(),
+        confirmPassword: Joi.string().required(),
         phone: Joi.number().required()
     })
     joiValidator(registerSchema, req, res, next)
@@ -54,7 +55,6 @@ export const createProductValidator = async (req, res, next) => {
         category: Joi.string().required(),
         images: Joi.string().required(),
         ratings: Joi.number().required(),
-        reviews: Joi.string().required(),
     })
     joiValidator(addProductSchema, req, res, next)
 }
