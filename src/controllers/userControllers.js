@@ -1,4 +1,3 @@
-import { startSession } from "mongoose";
 import { insertSession } from "../models/sessions/SessionModel.js";
 import { deleteUserById, getUserByEmail, registerUserModel, updateUser } from "../models/users/UserModel.js";
 import { userActivatedEmail } from "../services/emailServices.js";
@@ -134,8 +133,7 @@ export const signInUserController = async (req, res, next) => {
     }
 }
 
-// TODO //edit the user
-
+//edit the user
 export const updateUserController = async (req, res, next) => {
     try {
 
@@ -169,10 +167,7 @@ export const updateUserController = async (req, res, next) => {
     }
 }
 
-
-
-
-// TODO// delete the user
+// delete the user
 export const deleteUserController = async (req, res, next) => {
     try {
         const { _id } = req.params
@@ -193,7 +188,7 @@ export const deleteUserController = async (req, res, next) => {
         })
     } catch (error) {
         console.log(error)
-        next({
+        return next({
             statusCode: 500,
             message: "Internal server error",
             errorMessage: error?.message
@@ -201,16 +196,31 @@ export const deleteUserController = async (req, res, next) => {
     }
 }
 
-
 // //get user detail
-// export const getUserDetailController = async (req, res, next) => {
-//     //removing sensitive data
-//     req.userData.password= ""
-//     req.userData.refreshJWT=""
+export const getUserDetailController = async (req, res, next) => {
+    try {
 
-//     return res.json({
-//         status: "success",
-//         message: "User details",
-//         data: req.userData
-//     })
-// }
+        const { email } = req.userData
+        const foundUser = await getUserByEmail({ email: email })
+
+        if (!foundUser) {
+            return next({
+                statusCode: 404,
+                message: "User Not Found!",
+                errorMessage: "Check Id of user"
+            })
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "User Found!",
+            foundUser
+        })
+
+    } catch (error) {
+        return next({
+            statusCode: 500,
+            message: "Internal server error",
+            errorMessage: error?.message
+        })
+    }
+}
