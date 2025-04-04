@@ -6,6 +6,10 @@ export const createNewPoductDB = (newProductObj) => {
 export const getAllPoductsDB = () => {
   return ProductSchema.find({});
 };
+
+export const getActivePoductsDB = () => {
+  return ProductSchema.find({ status: "active" })
+}
 export const updateProductDB = (id, updateObj) => {
   return ProductSchema.findByIdAndUpdate(id, updateObj, { new: true });
 };

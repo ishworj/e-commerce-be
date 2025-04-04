@@ -1,6 +1,7 @@
 import {
   createNewPoductDB,
   deleteProductDB,
+  getActivePoductsDB,
   getAllPoductsDB,
   updateProductDB,
 } from "../models/products/ProductModel.js";
@@ -35,6 +36,11 @@ export const getAllProducts = async (req, res, next) => {
         message: "All products fetched",
         products,
       });
+    } else {
+      return res.status(400).json({
+        status: "error",
+        message: 'No Products Listed!'
+      })
     }
   } catch (error) {
     next({
@@ -44,6 +50,32 @@ export const getAllProducts = async (req, res, next) => {
     });
   }
 };
+
+export const getPublicProducts = async (req, res, next) => {
+  try {
+    const products = await getActivePoductsDB();
+
+    if (products) {
+      return res.status(200).json({
+        status: "success",
+        message: "All products fetched",
+        products,
+      });
+    } else {
+      return res.status(400).json({
+        status: "error",
+        message: 'No Products Listed!'
+      })
+    }
+
+  } catch (error) {
+    next({
+      statusCode: 500,
+      message: "Error while getting the Products",
+      errorMessage: error.message,
+    });
+  }
+}
 
 export const updateProduct = async (req, res, next) => {
   try {

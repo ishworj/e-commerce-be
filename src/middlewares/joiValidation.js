@@ -72,4 +72,14 @@ export const updateProductValidator = async (req, res, next) => {
     joiValidator(updateProductSchema, req, res, next)
 }
 
+// creating review validator
+export const createReviewValidator = async (req, res, next) => {
+    const createReviewSchema = Joi.object({
+        productId: Joi.string().required(),
+        userId: Joi.string().required(),
+        rating: Joi.number().required(),
+        comment: Joi.string().required()
+    })
 
+    joiValidator(createReviewSchema, req, res, next)
+}
