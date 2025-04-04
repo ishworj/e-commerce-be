@@ -6,6 +6,7 @@ import authRouter from "./src/routers/authRouter.js"
 import productRouter from "./src/routers/productRouter.js"
 import categoryRouter from "./src/routers/categoryRouter.js"
 import reviewRouter from "./src/routers/reviewRouter.js"
+import orderRouter from "./src/routers/orderRouter.js"
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/category", categoryRouter)
 app.use("/api/v1/review", reviewRouter)
+app.use("/api/v1/orders", orderRouter);
 
 // error handler
 app.use(errorHandler);
