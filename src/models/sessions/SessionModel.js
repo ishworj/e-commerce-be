@@ -1,4 +1,4 @@
-import SessionSchema from "./SessionSchema.js";
+import { SessionSchema } from "./SessionSchema.js";
 
 export const insertSession = (token) => {
     return SessionSchema(token).save()
