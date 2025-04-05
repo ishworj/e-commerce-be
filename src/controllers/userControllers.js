@@ -1,4 +1,4 @@
-import { insertSession } from "../models/sessions/SessionModel.js";
+import { insertAuthSession } from "../models/sessions/AuthSessionModel.js";
 import { deleteUserById, getUserByEmail, registerUserModel, updateUser } from "../models/users/UserModel.js";
 import { userActivatedEmail } from "../services/emailServices.js";
 import { comparePassword, encryptPassword } from "../utils/bcrypt.js";
@@ -29,7 +29,7 @@ export const registerUserController = async (req, res, next) => {
             })
         }
 
-        const session = await insertSession({
+        const session = await insertAuthSession({
             token: uuidv4(),
             association: user.email
         })

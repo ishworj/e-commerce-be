@@ -7,6 +7,7 @@ import productRouter from "./src/routers/productRouter.js"
 import categoryRouter from "./src/routers/categoryRouter.js"
 import reviewRouter from "./src/routers/reviewRouter.js"
 import orderRouter from "./src/routers/orderRouter.js"
+import verifyEmailRouter from "./src/routers/verifyEmailRouter.js"
 import { errorHandler } from "./src/middlewares/errorHandler.js";
 
 const app = express();
@@ -30,6 +31,9 @@ app.use("/api/v1/products", productRouter);
 app.use("/api/v1/category", categoryRouter)
 app.use("/api/v1/review", reviewRouter)
 app.use("/api/v1/orders", orderRouter);
+
+// verifying error
+app.use("/verify-user", verifyEmailRouter)
 
 // error handler
 app.use(errorHandler);

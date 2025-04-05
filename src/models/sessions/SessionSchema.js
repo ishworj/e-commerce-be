@@ -1,19 +1,31 @@
 import mongoose from "mongoose";
 
-const SessionSchema = new mongoose.Schema(
-    {
-        token: {
-            type: String,
-            required: true
-        },
-
-        associate: {
-            type: String
-        }
-
+const baseSessionSchema =
+{
+    token: {
+        type: String,
+        required: true
     },
+
+    associate: {
+        type: String
+    }
+
+}
+
+// login sessionschema
+const Session = new mongoose.Schema(baseSessionSchema, { timestamps: true }
+)
+
+// verifying sessionschema
+const AuthSession = new mongoose.Schema(
     {
-        timestamps: true
+        ...baseSessionSchema,
+        createdAt:
+        {
+            type: Date, default: Date.now, expires: 60 * 60 * 1
+        }
     })
 
-export default mongoose.model("session", SessionSchema)
+export const SessionSchema = mongoose.model("session", Session)
+export const AuthSessionSchema = mongoose.model("authSession", AuthSession)
