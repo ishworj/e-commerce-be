@@ -13,7 +13,10 @@ export const getAllOrderDB = () => {
 };
 
 export const updateOrderDB = (id, updateObj) => {
-  return OrderSchema.findByIdAndUpdate(id, updateObj, { new: true });
+  return OrderSchema.findByIdAndUpdate(id, updateObj, {
+    new: true,
+    runValidators: true,
+  });
 };
 
 export const getOneOrderDB = (id) => {
