@@ -2,7 +2,7 @@ import {
     findAuthSessionById,
     findAuthSessionByIdandDelete,
 } from "../models/sessions/auth.session.model.js";
-import { getUserByEmail, updateUser } from "../models/users/UserModel.js";
+import { getUserByEmail, updateUser } from "../models/users/user.model.js";
 
 export const verifyEmail = async (req, res, next) => {
     try {
