@@ -1,19 +1,19 @@
-import ProductSchema from "./ProductSchema.js";
+import ProductSchema from "./product.schema.js";
 export const createNewPoductDB = (newProductObj) => {
-  return ProductSchema(newProductObj).save();
+    return ProductSchema(newProductObj).save();
 };
 
 export const getAllPoductsDB = () => {
-  return ProductSchema.find({});
+    return ProductSchema.find({});
 };
 
 export const getActivePoductsDB = () => {
-  return ProductSchema.find({ status: "active" })
-}
+    return ProductSchema.find({ status: "active" });
+};
 export const updateProductDB = (id, updateObj) => {
-  return ProductSchema.findByIdAndUpdate(id, updateObj, { new: true });
+    return ProductSchema.findByIdAndUpdate(id, updateObj, { new: true });
 };
 
 export const deleteProductDB = (id) => {
-  return ProductSchema.findByIdAndDelete(id);
+    return ProductSchema.findByIdAndDelete(id);
 };

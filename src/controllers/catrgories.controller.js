@@ -2,7 +2,7 @@ import {
     createCategoryModel,
     deleteCategoryModel,
     updatingCategoryModel,
-} from "../models/categories/CategoryModel.js";
+} from "../models/categories/category.model.js";
 
 // creating the category
 export const insertCategoryController = async (req, res, next) => {
