@@ -4,6 +4,6 @@ export const conf = {
   dbName: process.env.DB_NAME,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiry: process.env.JWT_EXPIRES_IN,
-  jwtRefreshSecret: process.env.JWT.REFRESH_SECRET,
+  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
   jwtRefreshExpirt: process.env.JWT_REFRESH_EXPIRES_IN,
 };
