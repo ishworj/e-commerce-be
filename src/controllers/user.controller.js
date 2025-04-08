@@ -3,7 +3,7 @@ import {
     deleteUserById,
     getUserByEmail,
     registerUserModel,
-    updateUser,yar
+    updateUser
 } from "../models/users/user.model.js";
 import { userActivatedEmail } from "../services/email.service.js";
 import { comparePassword, encryptPassword } from "../utils/bcrypt.js";
@@ -149,14 +149,14 @@ export const updateUserController = async (req, res, next) => {
         const updatedUser = await updateUser(_id, formObj);
         updatedUser?._id
             ? res.json({
-                  status: "success",
-                  message: "User updated successfully",
-                  updatedUser,
-              })
+                status: "success",
+                message: "User updated successfully",
+                updatedUser,
+            })
             : next({
-                  status: "error",
-                  message: "Couldnot Update the user",
-              });
+                status: "error",
+                message: "Couldnot Update the user",
+            });
     } catch (error) {
         console.log(error);
         next({
@@ -181,14 +181,14 @@ export const deleteUserController = async (req, res, next) => {
 
         deletedUser?._id
             ? res.json({
-                  status: "success",
-                  message: "User deleted successfully",
-                  deletedUser,
-              })
+                status: "success",
+                message: "User deleted successfully",
+                deletedUser,
+            })
             : next({
-                  status: "error",
-                  message: "User not found",
-              });
+                status: "error",
+                message: "User not found",
+            });
     } catch (error) {
         console.log(error);
         return next({
