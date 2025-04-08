@@ -3,7 +3,7 @@ import {
     deleteUserById,
     getUserByEmail,
     registerUserModel,
-    updateUser,
+    updateUser,yar
 } from "../models/users/user.model.js";
 import { userActivatedEmail } from "../services/emailServices.js";
 import { comparePassword, encryptPassword } from "../utils/bcrypt.js";
