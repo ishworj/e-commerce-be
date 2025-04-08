@@ -4,8 +4,8 @@ import {
     createReview,
     getAllReviewsController,
     getPubReviews,
-} from "../controllers/reviewsController.js";
-import { createReviewValidator } from "../middlewares/joiValidation.js";
+} from "../controllers/reviews.controller.js";
+import { createReviewValidator } from "../middlewares/joi.validation.js";
 
 const router = express.Router();
 

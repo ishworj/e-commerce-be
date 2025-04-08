@@ -1,8 +1,8 @@
 import express from "express";
-import { verifyEmail } from "../controllers/verifyController.js";
+import { verifyEmail } from "../controllers/verify.controller.js";
 
 const router = express.Router();
 
-router.get("/", verifyEmail)
+router.get("/", verifyEmail);
 
-export default router
+export default router;

@@ -3,9 +3,9 @@ import {
     deleteUserById,
     getUserByEmail,
     registerUserModel,
-    updateUser,
+    updateUser,yar
 } from "../models/users/user.model.js";
-import { userActivatedEmail } from "../services/emailServices.js";
+import { userActivatedEmail } from "../services/email.service.js";
 import { comparePassword, encryptPassword } from "../utils/bcrypt.js";
 import { jwtRefreshSign, jwtSign } from "../utils/jwt.js";
 import { v4 as uuidv4 } from "uuid";
