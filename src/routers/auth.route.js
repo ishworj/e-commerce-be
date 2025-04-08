@@ -10,7 +10,7 @@ import { authenticate, isAdmin } from "../middlewares/auth.middleware.js";
 import {
     createUserValidator,
     singinUserValidator,
-} from "../middlewares/joiValidation.js";
+} from "../middlewares/joi.validation.js";
 
 const router = express.Router();
 

@@ -1,14 +1,14 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { connectDB } from "./src/config/mongoDbConfig.js";
-import authRouter from "./src/routers/authRouter.js"
-import productRouter from "./src/routers/productRouter.js"
-import categoryRouter from "./src/routers/categoryRouter.js"
-import reviewRouter from "./src/routers/reviewRouter.js"
-import orderRouter from "./src/routers/orderRouter.js"
-import verifyEmailRouter from "./src/routers/verifyEmailRouter.js"
-import { errorHandler } from "./src/middlewares/errorHandler.js";
+import { connectDB } from "./src/config/mongo.db.config.js";
+import authRouter from "./src/routers/auth.route.js"
+import productRouter from "./src/routers/product.route.js"
+import categoryRouter from "./src/routers/category.route.js"
+import reviewRouter from "./src/routers/review.route.js"
+import orderRouter from "./src/routers/order.route.js"
+import verifyEmailRouter from "./src/routers/verify.route.js"
+import { errorHandler } from "./src/middlewares/error.handler.js";
 
 const app = express();
 const PORT = process.env.PORT;
