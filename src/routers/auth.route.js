@@ -3,6 +3,7 @@ import {
     deleteUserController,
     getUserDetailController,
     registerUserController,
+    renewJwt,
     signInUserController,
     updateUserController,
 } from "../controllers/user.controller.js";
@@ -11,6 +12,7 @@ import {
     createUserValidator,
     singinUserValidator,
 } from "../middlewares/joi.validation.js";
+import { refreshJWTVerify } from "../utils/jwt.js";
 
 const router = express.Router();
 
@@ -32,6 +34,6 @@ router.put("/", authenticate, updateUserController);
 router.delete("/:_id", authenticate, isAdmin, deleteUserController);
 
 // renew-jwt
-router.get("/renew-jwt",)
+router.get("/renew-jwt", refreshJWTVerify, renewJwt)
 
 export default router;

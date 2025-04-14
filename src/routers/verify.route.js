@@ -1,9 +1,12 @@
 import express from "express";
-import { verifyAndUpdatePw, verifyEmail } from "../controllers/verify.controller.js";
+import { sendOTP, verifyAndUpdatePw, verifyEmail, verifyOTP, verifyUser } from "../controllers/verifications.js";
 
 const router = express.Router();
 
-router.get("/", verifyAndUpdatePw);
-router.get("/verify", verifyEmail)
+router.post("/", verifyAndUpdatePw);
+router.post("/verifyEmail", verifyEmail, sendOTP)
+router.post("/verify-otp", verifyOTP)
+router.get("/", verifyUser)
+
 
 export default router;

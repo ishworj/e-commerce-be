@@ -36,7 +36,7 @@ export const registerUserController = async (req, res, next) => {
 
         const session = await insertAuthSession({
             token: uuidv4(),
-            association: user.email,
+            associate: user.email,
         });
         if (!session._id) {
             return res.status(400).json({
