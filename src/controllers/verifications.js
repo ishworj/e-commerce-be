@@ -138,6 +138,7 @@ export const verifyOTP = async (req, res, next) => {
                 message: "Invalid OTP!"
             })
         }
+
         await findOTPAndDelete(req.body)
         return res.status(200).json({
             status: "success",
@@ -164,6 +165,7 @@ export const verifyUser = async (req, res, next) => {
         }
 
         const session = await findAuthSessionById(sessionId);
+        console.log(session, "session")
 
         if (!session || session.token !== token) {
             return next({
@@ -172,17 +174,10 @@ export const verifyUser = async (req, res, next) => {
                 errorMessage: "Invalid or expired session !!!",
             });
         }
-        const now = new Date()
-        console.log(session.expiresAt, now)
-        if (new Date(session.expiresAt) < now) {
-            return next({
-                statusCode: 403,
-                message: "Session has expired",
-                errorMessage: "The verification link has expired.",
-            });
-        }
+
         // marking the user as verified
         const userEmail = session.associate;
+        console.log(userEmail, "email")
         // find the user
         const user = await getUserByEmail({ email: userEmail });
         if (!user) {
@@ -193,6 +188,8 @@ export const verifyUser = async (req, res, next) => {
             });
         }
         await updateUser({ email: userEmail }, { verified: true })
+        await findAuthSessionByIdandDelete({ _id: sessionId })
+
         return res.status(200).json({
             status: "success",
             message: "Verification Successful!"
