@@ -10,7 +10,7 @@ const baseSessionSchema =
 
     associate: {
         type: String,
-        required: true
+        // required: true
     }
 
 }
@@ -36,6 +36,10 @@ const OtpSession = new mongoose.Schema({
     Otp: {
         type: Number,
         required: true
+    },
+    associate: {
+        type: String,
+        required: true,
     },
     expiresAt:
     {
