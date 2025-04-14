@@ -31,4 +31,7 @@ router.put("/", authenticate, updateUserController);
 //delete user
 router.delete("/:_id", authenticate, isAdmin, deleteUserController);
 
+// renew-jwt
+router.get("/renew-jwt",)
+
 export default router;

@@ -15,9 +15,9 @@ const PORT = process.env.PORT;
 
 // log middleware
 if (process.env.NODE_ENV !== "production") {
-    app.use(morgan("dev"));
+  app.use(morgan("dev"));
 } else {
-    app.use(morgan("combined"));
+  app.use(morgan("combined"));
 }
 
 //  hello this is the example
@@ -40,14 +40,14 @@ app.use(errorHandler);
 
 // listen the server
 const startServer = async () => {
-    try {
-        await connectDB();
-        app.listen(PORT, () => {
-            console.log(`The server is running at http://localhost:${PORT}`);
-        });
-    } catch (error) {
-        console.log("SERVER failed to run", error);
-    }
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`The server is running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.log("SERVER failed to run", error);
+  }
 };
 
 startServer();

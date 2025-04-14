@@ -27,9 +27,9 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phone:{
-      type:Number,
-      required : true
+    phone: {
+      type: Number,
+      required: true
     },
     confirmPassword: {
       type: String,
@@ -43,6 +43,10 @@ const UserSchema = new mongoose.Schema(
     image: {
       type: String,
       //   default: "default-profile.png",
+    },
+    refreshJWT: {
+      type: String,
+      default: ""
     },
     verified: {
       type: Boolean,

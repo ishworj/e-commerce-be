@@ -17,7 +17,8 @@ export const authenticate = async (req, res, next) => {
         if (!tokenFromDb) {
             return res.status(401).json({
                 status: "error",
-                message: "Token not found in the database",
+                message: "Authentication Failes",
+                errorMessage: "Token not found in the database"
             });
         }
 

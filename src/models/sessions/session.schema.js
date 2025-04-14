@@ -21,7 +21,7 @@ const Session = new mongoose.Schema(baseSessionSchema, { timestamps: true }
 const AuthSession = new mongoose.Schema(
     {
         ...baseSessionSchema,
-        createdAt:
+        expiresAt:
         {
             type: Date, default: Date.now, expires: 60 * 60 * 1
         }
