@@ -83,47 +83,61 @@ export const signInUserController = async (req, res, next) => {
         } else {
             // comparing the password or say checking if the user's password matches with the password stored in database
             const isLogged = await comparePassword(password, user.password);
-            console.log(isLogged, 433);
-            // token data for creating accessToken and refreshToken
-            const tokenData = {
-                email: user.email,
-            };
-
-            const token = await jwtSign(tokenData);
-            const refreshToken = await jwtRefreshSign(tokenData);
-
-            const data = await updateUser(
-                {
-                    _id: user._id,
-                },
-                {
-                    refreshJWT: refreshToken,
-                }
-            );
-
-            // removing the sensitive user data
-            user.password = "";
-            user.refreshJWT = "";
-
-            if (isLogged) {
-                req.userData = user;
-                return res.status(200).json({
-                    status: "success",
-                    message: "Logged in Successfully!!!",
-                    accessToken: token,
-                    refreshToken: refreshToken,
-                    data: {
-                        _id: user._id,
-                        email: user.email,
-                        userName: user.userName,
-                    },
+            if (!isLogged) {
+                return res.status(404).json({
+                    status: "error",
+                    message: "Wrong Password!",
                 });
+            }
+
+            if (user.verified) {
+                // token data for creating accessToken and refreshToken
+                const tokenData = {
+                    email: user.email,
+                };
+
+                const token = await jwtSign(tokenData);
+                const refreshToken = await jwtRefreshSign(tokenData);
+
+                const data = await updateUser(
+                    {
+                        email: user.email,
+                    },
+                    {
+                        refreshJWT: refreshToken,
+                    }
+                );
+
+                // removing the sensitive user data
+                user.password = "";
+                user.refreshJWT = "";
+
+                if (isLogged) {
+                    req.userData = user;
+                    return res.status(200).json({
+                        status: "success",
+                        message: "Logged in Successfully!!!",
+                        accessToken: token,
+                        refreshToken: refreshToken,
+                        data: {
+                            _id: user._id,
+                            email: user.email,
+                            userName: user.userName,
+                        },
+                    });
+                } else {
+                    return res.status(400).json({
+                        status: "error",
+                        message: "Ceredentials not matched!!!",
+                    });
+                }
             } else {
                 return res.status(400).json({
                     status: "error",
-                    message: "Ceredentials not matched!!!",
+                    message: "Your account is not Activated! Activate it First!"
                 });
             }
+
         }
     } catch (error) {
         console.log(error);
@@ -225,3 +239,19 @@ export const getUserDetailController = async (req, res, next) => {
         });
     }
 };
+
+
+// renew jwt
+export const renewJwt = async (req, res, next) => {
+    // recreate the access token 
+    const tokenData = {
+        email: req.userData.email,
+    };
+    const token = await jwtSign(tokenData)
+
+    return res.status(200).json({
+        status: "success",
+        message: "Token Refreshed",
+        accessToken: token
+    })
+}

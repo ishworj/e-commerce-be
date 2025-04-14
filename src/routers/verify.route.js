@@ -1,8 +1,9 @@
 import express from "express";
-import { verifyEmail } from "../controllers/verify.controller.js";
+import { verifyAndUpdatePw, verifyEmail } from "../controllers/verify.controller.js";
 
 const router = express.Router();
 
-router.get("/", verifyEmail);
+router.get("/", verifyAndUpdatePw);
+router.get("/verify", verifyEmail)
 
 export default router;

@@ -12,7 +12,7 @@ export const getUserByEmail = (email) => {
 
 //update user
 export const updateUser = (filter, formObj) => {
-    return UserSchema.findByIdAndUpdate(filter, formObj, { new: true });
+    return UserSchema.findOneAndUpdate(filter, formObj, { new: true });
 };
 
 //delete user by id
