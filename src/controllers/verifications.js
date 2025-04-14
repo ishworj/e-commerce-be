@@ -7,65 +7,36 @@ import {
 } from "../models/sessions/auth.session.model.js";
 import { getUserByEmail, updateUser } from "../models/users/user.model.js";
 import { OTPemail } from "../services/email.service.js";
+import { encryptPassword } from "../utils/bcrypt.js";
 
 export const verifyAndUpdatePw = async (req, res, next) => {
     try {
-        const sessionId = req.query.sessionId;
-        const token = req.query.t;
+        const { email, Otp, password, confirmPassword } = req.body
+        console.log(req.body)
 
-        if (!sessionId || !token) {
+        if (!password && !confirmPassword) {
             return next({
                 statusCode: 404,
-                message: "Invalid verification Link !!!",
-                errorMessage: "No Session Id or No token",
+                message: "Please enter new Password !!!",
+                errorMessage: "No password entered!",
             });
         }
-
-        const session = await findAuthSessionById(sessionId);
-
-        if (!session || session.token !== token) {
-            return next({
-                statusCode: 404,
-                message: "Invalid or expired session !!!",
-                errorMessage: "Invalid or expired session !!!",
-            });
+        const encryptedPassword = await encryptPassword(password)
+        const FoundOtp = await findOTP({ Otp: Otp })
+        console.log(FoundOtp)
+        if (FoundOtp.associate === email) {
+            const updateUserData = await updateUser({ email: email }, { password: encryptedPassword })
+            await findOTPAndDelete({ Otp: Otp })
         }
-
-        const now = new Date()
-        if (new Date(session.expiresAt) < now) {
-            return next({
-                statusCode: 403,
-                message: "Session has expired",
-                errorMessage: "The verification link has expired.",
-            });
-        }
-
-        // marking the user as verified
-        const userEmail = session.associate;
-        // find the user
-        const verifiedUser = await getUserByEmail(userEmail);
-        const updatedStatus = await updateUser(verifiedUser._id, {
-            verified: true,
-        });
-        if (!updatedStatus._id) {
-            return next({
-                statusCode: 404,
-                message: "Verification Process failed!!!",
-                errorMessage: "Could not complete the verification!",
-            });
-        }
-
-        // after verification deleting the session
-        await findAuthSessionByIdandDelete(sessionId);
 
         return res.status(200).json({
             status: "success",
-            message: "Your account has been verified!",
+            message: "Password has been changed !"
         });
     } catch (error) {
         next({
             statusCode: 500,
-            message: "Verification failed",
+            message: "Could not change the password!",
             errorMessage: error.message,
         });
     }
@@ -79,6 +50,12 @@ export const verifyEmail = async (req, res, next) => {
             return res.status(400).json({
                 status: "error",
                 message: "User is not Found!"
+            })
+        }
+        if (user.verified === false) {
+            return res.status(404).json({
+                status: "error",
+                message: "Activate your account first!"
             })
         }
 
@@ -109,7 +86,7 @@ export const sendOTP = async (req, res, next) => {
         const email = req.userData.email;
         const user = await getUserByEmail({ email: email })
         const userName = user.fName;
-        await insertOTP({ Otp: OTP });
+        await insertOTP({ Otp: OTP, associate: email });
         const obj = {
             OTP,
             email,
@@ -131,19 +108,31 @@ export const sendOTP = async (req, res, next) => {
 // verifying the OTP 
 export const verifyOTP = async (req, res, next) => {
     try {
-        const foundOtp = await findOTP(req.body)
+        const { email, Otp } = req.body
+        const foundOtp = await findOTP({ Otp: Otp })
+        console.log(foundOtp.associate)
+        console.log(email)
         if (!foundOtp) {
             next({
                 statusCode: 400,
                 message: "Invalid OTP!"
             })
         }
+        if (foundOtp.associate !== email) {
+            return res.status(404).json({
+                status: "error",
+                message: "Invalid OTP!"
+            })
+        }
 
         await findOTPAndDelete(req.body)
+
+
         return res.status(200).json({
             status: "success",
             message: "OTP verified!"
         })
+
     } catch (error) {
         next({
             statusCode: 500,
