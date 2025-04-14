@@ -24,6 +24,9 @@ const AuthSession = new mongoose.Schema(
         expiresAt:
         {
             type: Date, default: Date.now, expires: 60 * 60 * 1
+        },
+        createdAt: {
+            type: Date, default: Date.now
         }
     })
 
