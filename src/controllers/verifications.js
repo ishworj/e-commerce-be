@@ -1,6 +1,9 @@
 import {
     findAuthSessionById,
     findAuthSessionByIdandDelete,
+    findOTP,
+    findOTPAndDelete,
+    insertOTP,
 } from "../models/sessions/auth.session.model.js";
 import { getUserByEmail, updateUser } from "../models/users/user.model.js";
 import { OTPemail } from "../services/email.service.js";
@@ -102,10 +105,11 @@ export const sendOTP = async (req, res, next) => {
             return Otp;
         }
 
-        const OTP = generateRandomNumber()
+        const OTP = generateRandomNumber();
         const email = req.userData.email;
         const user = await getUserByEmail({ email: email })
         const userName = user.fName;
+        await insertOTP({ Otp: OTP });
         const obj = {
             OTP,
             email,
@@ -124,7 +128,29 @@ export const sendOTP = async (req, res, next) => {
         })
     }
 }
-
+// verifying the OTP 
+export const verifyOTP = async (req, res, next) => {
+    try {
+        const foundOtp = await findOTP(req.body)
+        if (!foundOtp) {
+            next({
+                statusCode: 400,
+                message: "Invalid OTP!"
+            })
+        }
+        await findOTPAndDelete(req.body)
+        return res.status(200).json({
+            status: "success",
+            message: "OTP verified!"
+        })
+    } catch (error) {
+        next({
+            statusCode: 500,
+            message: "Verification failed",
+            errorMessage: error.message,
+        });
+    }
+}
 export const verifyUser = async (req, res, next) => {
     try {
         const sessionId = req.query.sessionId;

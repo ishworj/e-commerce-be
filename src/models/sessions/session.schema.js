@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const baseSessionSchema =
@@ -30,5 +31,19 @@ const AuthSession = new mongoose.Schema(
         }
     })
 
+// otp sessionSchema
+const OtpSession = new mongoose.Schema({
+    Otp: {
+        type: Number,
+        required: true
+    },
+    expiresAt: {
+        type: Date,
+        default: Date.now,
+        expires: 3600
+    }
+})
+
 export const SessionSchema = mongoose.model("session", Session)
 export const AuthSessionSchema = mongoose.model("authSession", AuthSession)
+export const OtpSessionSchema = mongoose.model("Otp", OtpSession)
