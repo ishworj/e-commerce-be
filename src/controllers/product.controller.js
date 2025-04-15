@@ -103,7 +103,7 @@ export const updateProduct = async (req, res, next) => {
 
 export const deleteProduct = async (req, res, next) => {
     try {
-        const deletedProduct = await deleteProductDB(req.params.id, req.body);
+        const deletedProduct = await deleteProductDB(req.params.id);
 
         if (deletedProduct?._id) {
             return res.json({

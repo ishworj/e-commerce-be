@@ -7,25 +7,41 @@ import {
 } from "../models/sessions/auth.session.model.js";
 import { getUserByEmail, updateUser } from "../models/users/user.model.js";
 import { OTPemail } from "../services/email.service.js";
-import { encryptPassword } from "../utils/bcrypt.js";
+import { comparePassword, encryptPassword } from "../utils/bcrypt.js";
 
 export const verifyAndUpdatePw = async (req, res, next) => {
     try {
         const { email, Otp, password, confirmPassword } = req.body
         console.log(req.body)
 
-        if (!password && !confirmPassword) {
+        if (password !== confirmPassword) {
             return next({
                 statusCode: 404,
-                message: "Please enter new Password !!!",
-                errorMessage: "No password entered!",
+                message: "Password and Confirm Password didnt match !!!",
+                errorMessage: "Password and Confirm Password didnt match!",
             });
         }
-        const encryptedPassword = await encryptPassword(password)
+        const user = await getUserByEmail({ email: email })
+        console.log(user, "user")
+        const isPasswordSame = await comparePassword(password, user.password)
+        if (isPasswordSame) {
+            return res.status(404).json({
+                status: "error",
+                message: "Old Password!"
+            })
+        }
+        console.log(isPasswordSame, 57)
+
+        const encryptedPassword = await encryptPassword(password);
+
+        // console.log(encrypting, "encrypted")
+
         const FoundOtp = await findOTP({ Otp: Otp })
         console.log(FoundOtp)
         if (FoundOtp.associate === email) {
-            const updateUserData = await updateUser({ email: email }, { password: encryptedPassword })
+            const updateUserData = await updateUser({ email: email }, {
+                password: encryptedPassword
+            })
             await findOTPAndDelete({ Otp: Otp })
         }
 
@@ -68,7 +84,6 @@ export const verifyEmail = async (req, res, next) => {
         });
     }
 }
-
 export const sendOTP = async (req, res, next) => {
     try {
         const generateRandomNumber = () => {
@@ -110,8 +125,8 @@ export const verifyOTP = async (req, res, next) => {
     try {
         const { email, Otp } = req.body
         const foundOtp = await findOTP({ Otp: Otp })
-        console.log(foundOtp.associate)
-        console.log(email)
+        // console.log(foundOtp.associate)
+        // console.log(email)
         if (!foundOtp) {
             next({
                 statusCode: 400,
