@@ -1,6 +1,7 @@
 import {
     createCategoryModel,
     deleteCategoryModel,
+    getCategoriesDB,
     updatingCategoryModel,
 } from "../models/categories/category.model.js";
 
@@ -26,6 +27,34 @@ export const insertCategoryController = async (req, res, next) => {
             statusCode: 500,
             message:
                 error?.message || "Internal error in creating the category",
+            errorMessage: error.message,
+        });
+    }
+};
+
+
+
+// creating the category
+export const getCategoryController = async (req, res, next) => {
+    try {
+        const categories =  await getCategoriesDB()
+
+        if (!categories) {
+            next({
+                statusCode: 401,
+                message: "Error getting categories",
+            });
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "all categories here",
+            categories,
+        });
+    } catch (error) {
+        next({
+            statusCode: 500,
+            message:
+                error?.message || "Internal error in fetching the category",
             errorMessage: error.message,
         });
     }
