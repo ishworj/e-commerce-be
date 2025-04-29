@@ -5,9 +5,9 @@ const joiValidator = async (schema, req, res, next) => {
   const { error } = schema.validate(req.body);
   error
     ? next({
-        statusCode: 400,
-        message: error.message,
-      })
+      statusCode: 400,
+      message: error.message,
+    })
     : next();
 };
 
@@ -54,7 +54,7 @@ export const createProductValidator = async (req, res, next) => {
     price: Joi.number().required(),
     stock: Joi.number().required(),
     category: Joi.string().required(),
-    images: Joi.string().required(),
+    images: Joi.array(),
     ratings: Joi.number().required(),
   });
   joiValidator(addProductSchema, req, res, next);

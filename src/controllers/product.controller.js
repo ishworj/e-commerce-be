@@ -79,7 +79,7 @@ export const getPublicProducts = async (req, res, next) => {
 // getting the product using id
 export const getProductById = async (req, res, next) => {
     try {
-        const product = await getSingleProduct(req.params._id)
+        const product = await getSingleProduct(req.params.id)
         console.log(product, 909)
         return res.status(200).json({
             status: "success",
