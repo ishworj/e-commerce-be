@@ -11,7 +11,7 @@ export const getActivePoductsDB = () => {
     return ProductSchema.find({ status: "active" });
 };
 export const getSingleProduct = (id) => {
-    return ProductSchema.findOne({ id: id })
+    return ProductSchema.findOne({ _id: id })
 }
 export const updateProductDB = (id, updateObj) => {
     return ProductSchema.findByIdAndUpdate(id, updateObj, { new: true });
