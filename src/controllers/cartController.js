@@ -25,7 +25,7 @@ export const createCartController = async (req, res, next) => {
             const response = await createCart(userId, product)
             return res.status(200).json({
                 status: "success",
-                "message": "Item added in Cart",
+                message: "Item added in Cart",
                 response
             })
 
@@ -35,7 +35,7 @@ export const createCartController = async (req, res, next) => {
             const response = await findProductInCartAndAdd(userId, product)
             return res.status(200).json({
                 status: "success",
-                "message": "Item added in Cart",
+                message: "Items added in Cart",
                 response
             })
         }

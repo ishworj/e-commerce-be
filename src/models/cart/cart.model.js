@@ -20,7 +20,7 @@ export const findProductInCart = (userId, _id) => {
 }
 // if there is a existing cart and item, then just update the quantity that is provided or update by 1 by default
 export const findProductInCartAndAdd = (userId, product) => {
-    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": product._id }, { $inc: { "cartItems.$.quantity": product.quantity || 1 } })
+    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": product._id }, { $inc: { "cartItems.$.quantity": product.quantity || 1 } }, { new: true })
 }
 // if there is a existing cart but not the product then simply add it 
 export const findCartAndAdd = (filter, obj) => {
