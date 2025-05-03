@@ -253,3 +253,45 @@ export const renewJwt = async (req, res, next) => {
     accessToken: token,
   });
 };
+
+//logout user
+export const logoutUserController = async (req, res) => {
+  try {
+    const user = req.userData;
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not authenticated",
+      });
+    }
+
+    const dbUser = await logoutUserById(_id);
+
+    if (!dbUser) {
+      return res.status(400).json({
+        status: "error",
+        message: "User not found",
+      });
+    }
+
+    // remove the refresh token from the user email
+    dbUser.refreshToken = "";
+    await dbUser.save({ validateBeforeSave: false });
+
+    //delete the session from the database associated with user email
+    await SessionSchema.deleteMany({ associate: dbUser.email });
+
+    return res.status(200).json({
+      status: "success",
+      message: "logged out successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      errorMessage: error?.message,
+    });
+  }
+};
