@@ -15,6 +15,15 @@ const CartItemSchema = new Schema({
         type: Number,
         required: true
     },
+    costPrice: {
+        type: Number,
+        required: true
+    },
+    images: [String],
+    stock: {
+        type: Number,
+        default: 0
+    },
     quantity: {
         type: Number,
         default: 1,

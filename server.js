@@ -25,7 +25,19 @@ if (process.env.NODE_ENV !== "production") {
 // Run server here
 app.use(express.json());
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173'
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 // routers
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", productRouter);
