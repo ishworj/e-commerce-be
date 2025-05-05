@@ -32,12 +32,10 @@ export const insertCategoryController = async (req, res, next) => {
     }
 };
 
-
-
 // creating the category
 export const getCategoryController = async (req, res, next) => {
     try {
-        const categories =  await getCategoriesDB()
+        const categories = await getCategoriesDB()
 
         if (!categories) {
             next({

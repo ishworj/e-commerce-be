@@ -5,7 +5,6 @@ import CartSchema from "./cart.schema.js"
 export const findCart = (userId) => {
     return CartSchema.findOne({ userId })
 }
-
 // finding the product item in the existing cart
 export const findProductInCart = (userId, _id) => {
     return CartSchema.findOne(
@@ -18,9 +17,9 @@ export const findProductInCart = (userId, _id) => {
             }
         })
 }
-// if there is a existing cart and item, then just update the quantity that is provided or update by 1 by default
+// if there is a existing cart and item, then just update the quantity that is provided or update by 1 by default and also adds the cost price upon change in the quantity from the user prospective
 export const findProductInCartAndAdd = (userId, product) => {
-    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": product._id }, { $inc: { "cartItems.$.quantity": product.quantity || 1 } }, { new: true })
+    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": product._id }, { $inc: { "cartItems.$.quantity": product.quantity || 1, "cartItems.$.costPrice": product.costPrice } }, { new: true })
 }
 // if there is a existing cart but not the product then simply add it 
 export const findCartAndAdd = (filter, obj) => {
@@ -33,7 +32,6 @@ export const findCartAndAdd = (filter, obj) => {
             new: true
         })
 }
-
 // checks if there is existing cart or not, if not creates and add the items
 export const createCart = (filter, obj) => {
     return CartSchema.findOneAndUpdate(
@@ -50,12 +48,6 @@ export const createCart = (filter, obj) => {
 
     )
 }
-
-export const updateCartItemQuantity = (userId, _id, change) => {
-    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": _id }, { $inc: { "cartItems.$.quantity": change } }, { new: true })
-}
-
-
 export const deleteCartItems = (userId, _id) => {
     return CartSchema.findOneAndUpdate(
         { userId },
@@ -69,11 +61,12 @@ export const deleteCartItems = (userId, _id) => {
         { new: true }
     )
 }
-
 export const getCartItemByProductId = (_id) => {
-    return CartSchema.findOne({
-        cartItems: {
-            $elemMatch: { _id }
-        }
-    })
+    return CartSchema.findOne(
+        { "cartItems._id": _id },
+        { "cartItems.$": 1 }
+    )
+}
+export const updateCartItem = (userId, _id, product) => {
+    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": _id }, { $set: { "cartItems.$.quantity": product.quantity, "cartItems.$.costPrice": product.costPrice } }, { new: true })
 }
