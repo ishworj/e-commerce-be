@@ -1,16 +1,17 @@
 import express from "express";
 import {
-    deleteUserController,
-    getUserDetailController,
-    registerUserController,
-    renewJwt,
-    signInUserController,
-    updateUserController,
+  deleteUserController,
+  getUserDetailController,
+  logoutUserController,
+  registerUserController,
+  renewJwt,
+  signInUserController,
+  updateUserController,
 } from "../controllers/user.controller.js";
 import { authenticate, isAdmin } from "../middlewares/auth.middleware.js";
 import {
-    createUserValidator,
-    singinUserValidator,
+  createUserValidator,
+  singinUserValidator,
 } from "../middlewares/joi.validation.js";
 import { refreshJWTVerify } from "../utils/jwt.js";
 
@@ -34,6 +35,9 @@ router.put("/", authenticate, updateUserController);
 router.delete("/:_id", authenticate, isAdmin, deleteUserController);
 
 // renew-jwt
-router.get("/renew-jwt", refreshJWTVerify, renewJwt)
+router.get("/renew-jwt", refreshJWTVerify, renewJwt);
+
+//logout
+router.get("/logout", authenticate, logoutUserController);
 
 export default router;
