@@ -6,7 +6,7 @@ const ProductSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["active", "inactive"],
-      default: "inactive"
+      default: "inactive",
     },
     name: {
       type: String,
@@ -30,7 +30,11 @@ const ProductSchema = new mongoose.Schema(
     },
     images: [String],
 
-    ratings: [Number],
+    ratings: {
+      type: [Number],
+      default: [0],
+    },
+
     reviews: [
       {
         type: mongoose.Types.ObjectId,

@@ -13,7 +13,7 @@ const CategorySchema = new mongoose.Schema(
       type: "String",
     },
     featureImageUrl: {
-      type: "String",
+      type: "String"},
 
     categoryImage: {
       type: String,
