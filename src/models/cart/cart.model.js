@@ -61,9 +61,10 @@ export const deleteCartItems = (userId, _id) => {
         { new: true }
     )
 }
-export const getCartItemByProductId = (_id) => {
+export const getCartItemByProductId = (userId, _id) => {
+    console.log(userId, _id, 4444)
     return CartSchema.findOne(
-        { "cartItems._id": _id },
+        { userId, "cartItems._id": _id },
         { "cartItems.$": 1 }
     )
 }
