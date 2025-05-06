@@ -55,7 +55,8 @@ export const createProductValidator = async (req, res, next) => {
     stock: Joi.number().required(),
     category: Joi.string().required(),
     images: Joi.array(),
-    ratings: Joi.number().required(),
+    status:Joi.string().valid("active", "inactive")
+    // ratings: Joi.number().required(),
   });
   joiValidator(addProductSchema, req, res, next);
 };
