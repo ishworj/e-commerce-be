@@ -119,11 +119,7 @@ export const signInUserController = async (req, res, next) => {
             message: "Logged in Successfully!!!",
             accessToken: token,
             refreshToken: refreshToken,
-            data: {
-              _id: user._id,
-              email: user.email,
-              userName: user.userName,
-            },
+            user, 
           });
         } else {
           return res.status(400).json({
