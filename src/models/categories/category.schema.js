@@ -13,18 +13,19 @@ const CategorySchema = new mongoose.Schema(
     },
     featureImageUrl: {
       type: "String",
-      
+    },
+
     categoryImage: {
       type: String,
       trim: true,
-      required: true},
+      required: true,
+    },
 
     displaytitle: {
       type: "String",
     },
     featureImageUrl: {
-      type: "String"},
-
+      type: "String",
     },
   },
   { timestamps: true }
