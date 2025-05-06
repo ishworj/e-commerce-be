@@ -8,6 +8,7 @@ import categoryRouter from "./src/routers/category.route.js";
 import reviewRouter from "./src/routers/review.route.js";
 import orderRouter from "./src/routers/order.route.js";
 import verifyEmailRouter from "./src/routers/verify.route.js";
+import cartRouter from "./src/routers/cart.route.js";
 import { errorHandler } from "./src/middlewares/error.handler.js";
 
 const app = express();
@@ -24,13 +25,26 @@ if (process.env.NODE_ENV !== "production") {
 // Run server here
 app.use(express.json());
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173'
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 // routers
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/orders", orderRouter);
+app.use('/api/v1/cart', cartRouter)
 
 // verifying error
 app.use("/verify-user", verifyEmailRouter);
