@@ -9,11 +9,11 @@ import {
 } from "../controllers/product.controller.js";
 import { createProductValidator } from "../middlewares/joi.validation.js";
 import { authenticate, isAdmin } from "../middlewares/auth.middleware.js";
+import upload from '../config/multer.config.js'
 
 const router = express.Router();
-
-// creating the product
-router.post("/", createProductValidator, authenticate, isAdmin, createProduct);
+// creating the product // uploading array of images max 4 // under name form field images 
+router.post("/", upload.array("images",4),createProductValidator, authenticate, isAdmin, createProduct);
 // getting all the products --- for admin including inactive products
 router.get("/", authenticate, isAdmin, getAllProducts);
 // getting all active products for the customer

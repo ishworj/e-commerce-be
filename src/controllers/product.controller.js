@@ -9,6 +9,10 @@ import {
 
 export const createProduct = async (req, res, next) => {
   try {
+
+    const imageUrls = req.files.map((file) => file.path); // Cloudinary URLs
+    req.body.images = imageUrls;
+
     const product = await createNewPoductDB(req.body);
 
     if (product?._id) {
