@@ -6,4 +6,7 @@ export const conf = {
   jwtExpiry: process.env.JWT_EXPIRES_IN,
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET,
   jwtRefreshExpirt: process.env.JWT_REFRESH_EXPIRES_IN,
+  cloudName: process.env.CLOUD_NAME,
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
 };
