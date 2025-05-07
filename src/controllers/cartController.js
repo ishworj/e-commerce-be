@@ -61,7 +61,8 @@ export const deleteCartItemController = async (req, res, next) => {
         const userId = req.userData._id;
         const { _id } = req.body
         // finding the detail of the product
-        const cart = await getCartItemByProductId(_id)
+        const cart = await getCartItemByProductId(userId, _id)
+        console.log(cart, "cart")
         console.log(cart?.cartItems?.[0], "deelete")
         if (!cart?.cartItems?.[0]) {
             return next({
@@ -112,14 +113,15 @@ export const fetchCart = async (req, res, next) => {
 export const updateCartItems = async (req, res, next) => {
     try {
         const userId = req.userData._id
-        const { quantity, _id } = req.body
-        const cart = await getCartItemByProductId(_id)
+        const { quantity, _id, totalPrice } = req.body
+        const cart = await getCartItemByProductId(userId, _id)
+        console.log(cart, 347)
         console.log(cart?.cartItems?.[0], "ssdf")
         const { price } = cart?.cartItems?.[0];
         console.log(price, 22)
         const product = {
             quantity,
-            costPrice: quantity * price
+            costPrice: totalPrice
         }
         const response = await updateCartItem(userId, _id, product)
         return res.status(200).json({
@@ -128,6 +130,7 @@ export const updateCartItems = async (req, res, next) => {
             response
         })
     } catch (error) {
+        console.log(error)
         next({
             statusCode: 500,
             message: "Internal Error",
