@@ -21,7 +21,7 @@ router.get("/active", getPublicProducts);
 
 router.get("/:id", getProductById)
 // updating the product detail
-router.put("/:id", authenticate, isAdmin, updateProduct);
+router.put("/:id", upload.array("images",4), authenticate, isAdmin, updateProduct);
 // deleting the product
 router.delete("/:id", authenticate, isAdmin, deleteProduct);
 

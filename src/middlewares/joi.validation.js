@@ -48,8 +48,6 @@ export const updateUserValidator = async (req, res, next) => {
 
 // creating product validator
 export const createProductValidator = async (req, res, next) => {
-
-  console.log(5555555555555,req.body)
   const addProductSchema = Joi.object({
     name: Joi.string().required(),
     description: Joi.string().required(),
