@@ -101,7 +101,15 @@ export const getProductById = async (req, res, next) => {
 
 export const updateProduct = async (req, res, next) => {
   try {
-    const updatedProduct = await updateProductDB(req.params.id, req.body);
+    let { oldImages, ...rest } = req.body;
+    console.log(rest);
+    oldImages = JSON.parse(oldImages || "[]");
+    const newImages = req.files.map((file) => file.path);
+    const allImages = [...oldImages, ...newImages];
+
+    const updateObj = { ...rest, images: allImages };
+
+    const updatedProduct = await updateProductDB(req.params.id, updateObj);
 
     if (updatedProduct?._id) {
       return res.json({
