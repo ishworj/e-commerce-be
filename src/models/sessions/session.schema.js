@@ -50,3 +50,4 @@ const OtpSession = new mongoose.Schema({
 export const SessionSchema = mongoose.model("session", Session)
 export const AuthSessionSchema = mongoose.model("authSession", AuthSession)
 export const OtpSessionSchema = mongoose.model("Otp", OtpSession)
+
