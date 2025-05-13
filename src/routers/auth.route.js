@@ -8,12 +8,11 @@ import {
   signInUserController,
   updateUserController,
 } from "../controllers/user.controller.js";
-import { authenticate, isAdmin } from "../middlewares/auth.middleware.js";
+import { authenticate, isAdmin, refreshAuthenticate } from "../middlewares/auth.middleware.js";
 import {
   createUserValidator,
   singinUserValidator,
 } from "../middlewares/joi.validation.js";
-import { refreshJWTVerify } from "../utils/jwt.js";
 
 const router = express.Router();
 
@@ -35,7 +34,7 @@ router.put("/", authenticate, updateUserController);
 router.delete("/:_id", authenticate, isAdmin, deleteUserController);
 
 // renew-jwt
-router.get("/renew-jwt", refreshJWTVerify, renewJwt);
+router.get("/renew-jwt", refreshAuthenticate, renewJwt);
 
 //logout
 router.get("/logout", authenticate, logoutUserController);

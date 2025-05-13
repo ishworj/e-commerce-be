@@ -1,6 +1,6 @@
 import { findToken } from "../models/sessions/session.model.js";
 import { getUserByEmail } from "../models/users/user.model.js";
-import { jwtVerify } from "../utils/jwt.js";
+import { jwtVerify, refreshJWTVerify } from "../utils/jwt.js";
 
 export const authenticate = async (req, res, next) => {
     try {
@@ -65,7 +65,8 @@ export const refreshAuthenticate = async (req, res, next) => {
         // checking if the token gets verified and if there is token
         if (decodedData?.email) {
             // find the user
-            const userData = await getUserByEmail({ email });
+            const userData = await getUserByEmail({ email: decodedData.email });
+
             if (userData && userData.refreshJWT == token) {
                 req.user = userData;
                 next();

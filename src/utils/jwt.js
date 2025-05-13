@@ -3,10 +3,13 @@ import { insertSession } from "../models/sessions/session.model.js";
 
 // creating a token
 export const jwtSign = (tokenData) => {
+    console.log(111111)
     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     });
+    console.log(222222)
     insertSession({ token });
+    console.log(333333)
     return token;
 };
 // verifying the token
@@ -23,5 +26,5 @@ export const jwtRefreshSign = (tokenData) => {
 };
 // verifying the refreshToken
 export const refreshJWTVerify = (refreshJWT) => {
-    return jwt.verify(refreshJWT, process.env, JWT_REFRESH_SECRET);
+    return jwt.verify(refreshJWT, process.env.JWT_REFRESH_SECRET);
 };

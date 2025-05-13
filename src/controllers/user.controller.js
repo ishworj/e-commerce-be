@@ -119,7 +119,7 @@ export const signInUserController = async (req, res, next) => {
             message: "Logged in Successfully!!!",
             accessToken: token,
             refreshToken: refreshToken,
-            user, 
+            user,
           });
         } else {
           return res.status(400).json({
@@ -139,7 +139,7 @@ export const signInUserController = async (req, res, next) => {
     next({
       statusCode: 500,
       message: "Internal error!",
-      statusMessage: error.message,
+      errorMessage: error.message,
     });
   }
 };
@@ -158,14 +158,14 @@ export const updateUserController = async (req, res, next) => {
     const updatedUser = await updateUser(_id, formObj);
     updatedUser?._id
       ? res.json({
-          status: "success",
-          message: "User updated successfully",
-          updatedUser,
-        })
+        status: "success",
+        message: "User updated successfully",
+        updatedUser,
+      })
       : next({
-          status: "error",
-          message: "Couldnot Update the user",
-        });
+        status: "error",
+        message: "Couldnot Update the user",
+      });
   } catch (error) {
     console.log(error);
     next({
@@ -190,14 +190,14 @@ export const deleteUserController = async (req, res, next) => {
 
     deletedUser?._id
       ? res.json({
-          status: "success",
-          message: "User deleted successfully",
-          deletedUser,
-        })
+        status: "success",
+        message: "User deleted successfully",
+        deletedUser,
+      })
       : next({
-          status: "error",
-          message: "User not found",
-        });
+        status: "error",
+        message: "User not found",
+      });
   } catch (error) {
     console.log(error);
     return next({
@@ -237,17 +237,23 @@ export const getUserDetailController = async (req, res, next) => {
 
 // renew jwt
 export const renewJwt = async (req, res, next) => {
-  // recreate the access token
-  const tokenData = {
-    email: req.userData.email,
-  };
-  const token = await jwtSign(tokenData);
+  try {
+    const email = req.user.email
+    // recreate the access token
+    const token = await jwtSign({ email: email });
+    console.log("dsfgsdfjgsd;lksdflk2")
+    return res.status(200).json({
+      status: "success",
+      message: "Token Refreshed",
+      accessToken: token,
+    });
+  } catch (error) {
+    console.log(error)
+    next({
+      errorMessage: error.message
+    })
+  }
 
-  return res.status(200).json({
-    status: "success",
-    message: "Token Refreshed",
-    accessToken: token,
-  });
 };
 
 //logout user
