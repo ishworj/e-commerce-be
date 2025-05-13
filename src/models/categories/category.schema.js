@@ -8,16 +8,19 @@ const CategorySchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    categoryImage: {
-      type: String,
-      trim: true,
-      required: true,
-    },
+
     displaytitle: {
       type: "String",
     },
     featureImageUrl: {
       type: "String",
+    },
+
+
+    categoryImage: {
+      type: String,
+      trim: true,
+      required: true,
     },
   },
   { timestamps: true }
