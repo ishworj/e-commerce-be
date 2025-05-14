@@ -8,18 +8,29 @@ import {
 // creating the category
 export const insertCategoryController = async (req, res, next) => {
   try {
-    const obj = req.body;
+    const obj = { ...req.body };
+
+    // Handle file uploads
+    if (req.files?.categoryImage?.[0]?.path) {
+      obj.categoryImage = req.files.categoryImage[0].path;
+    }
+
+    if (req.files?.featureImage?.[0]?.path) {
+      obj.featureImageUrl = req.files.featureImage[0].path;
+    }
+
     const categoryData = await createCategoryModel(obj);
 
     if (!categoryData._id) {
-      next({
+      return next({
         statusCode: 401,
-        message: "Error! Couldnot create the category.",
+        message: "Error! Could not create the category.",
       });
     }
+
     return res.status(200).json({
       status: "success",
-      message: "Successfully, created a Category",
+      message: "Successfully created a Category",
       categoryData,
     });
   } catch (error) {
@@ -31,12 +42,11 @@ export const insertCategoryController = async (req, res, next) => {
   }
 };
 
+
 // creating the category
 export const getCategoryController = async (req, res, next) => {
-
-    try {
-        const categories = await getCategoriesDB()
-
+  try {
+    const categories = await getCategoriesDB();
 
     if (!categories) {
       next({
@@ -62,37 +72,46 @@ export const getCategoryController = async (req, res, next) => {
 export const updateCategoryController = async (req, res, next) => {
   try {
     const { _id } = req.params;
-    console.log(req.body);
 
     if (!_id) {
-      next({
+      return next({
         statusCode: 400,
         message: "Category Id is required!",
         errorMessage: "Category id is not received!",
       });
     }
-    const updateObj = req.body;
-    const updatedCategory = await updatingCategoryModel(_id, {
-      ...updateObj,
-    });
+
+    const updateObj = { ...req.body };
+
+    // Handle uploaded files
+    if (req.files?.newCategoryImage?.[0]?.path) {
+      updateObj.categoryImage = req.files.newCategoryImage[0].path;
+    }
+
+    if (req.files?.newFeatureImage?.[0]?.path) {
+      updateObj.featureImageUrl = req.files.newFeatureImage[0].path;
+    }
+
+    const updatedCategory = await updatingCategoryModel(_id, updateObj);
 
     if (!updatedCategory) {
-      next({
+      return next({
         statusCode: 404,
-        message: "Couldnot update the category! Category Id wrong",
-        errorMessage: "Category Not updated! Category Id Wrong",
-      });
-    } else {
-      res.status(200).json({
-        status: "success",
-        message: "Successfully! Updated the name of the category.",
-        updatedCategory,
+        message: "Could not update the category! Category ID may be wrong.",
+        errorMessage: "Category not updated.",
       });
     }
+
+    res.status(200).json({
+      status: "success",
+      message: "Successfully updated the category.",
+      updatedCategory,
+    });
   } catch (error) {
     next({
       statusCode: 500,
-      message: error?.message || "Internal error in updating the category",
+      message:
+        error?.message || "Internal server error while updating category.",
       errorMessage: error.message,
     });
   }
@@ -125,6 +144,3 @@ export const deleteCategoryController = async (req, res, next) => {
     });
   }
 };
-
-// some commit
-// some commit 2
