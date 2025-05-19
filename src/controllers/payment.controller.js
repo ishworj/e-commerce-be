@@ -1,0 +1,83 @@
+import Stripe from "stripe";
+import { findCart } from "../models/cart/cart.model.js";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export const makePayment = async (req, res, next) => {
+  try {
+    // const origin = req.headers.origin;
+    const user = req.userData;
+    const cart = await findCart(user._id);
+
+    if (!cart || cart.cartItems.length === 0) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Cart is empty" });
+      s;
+    }
+
+    // Prepare line items for Stripe
+    const line_items = cart.cartItems.map((item) => ({
+      price_data: {
+        currency: "aud", // or your preferred currency
+        product_data: {
+          name: item.name,
+          images: item.images,
+        },
+        unit_amount: item.price * 100, // Stripe expects amount in cents
+      },
+      quantity: item.quantity,
+    }));
+
+    // Creates the checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items,
+      customer_email: user.email,
+      mode: "payment",
+      success_url:
+        "http://localhost:5173/payment-result?success=true&session_id={CHECKOUT_SESSION_ID}",
+      cancel_url:
+        "http://localhost:5173/payment-result?success=false&session_id={CHECKOUT_SESSION_ID}",
+
+      //   success_url: `${origin}?success=true`, for production
+      //   cancel_url: `${origin}?canceled=true`,
+    });
+
+    // Send the session URL
+    return res.status(200).json({
+      status: "success",
+      message: "Checkout session created successfully",
+      url: session.url,
+    });
+  } catch (error) {
+    console.error("Error creating checkout session:", error);
+    next({
+      statusCode: 500,
+      message: "payment failed",
+      errorMessage: error?.message,
+    });
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const verifyPaymentSession = async (req, res) => {
+  const { session_id } = req.query;
+  console.log("session_id", session_id);
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    res.json({
+      verified: session.payment_status === "paid",
+      status: session.payment_status,
+      session,
+    });
+  } catch (err) {
+    res.status(400).json({
+      verified: false,
+      error: err.message,
+    });
+  }
+};
