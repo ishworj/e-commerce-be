@@ -10,6 +10,7 @@ import orderRouter from "./src/routers/order.route.js";
 import verifyEmailRouter from "./src/routers/verify.route.js";
 import cartRouter from "./src/routers/cart.route.js";
 import paymentRouter from "./src/routers/payment.route.js";
+import chatRouter from "./src/routers/chat.route.js";
 import { errorHandler } from "./src/middlewares/error.handler.js";
 
 const app = express();
@@ -47,6 +48,7 @@ app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/payment", paymentRouter);
+app.use("/api/v1/chat", chatRouter);
 
 // verifying error
 app.use("/verify-user", verifyEmailRouter);
