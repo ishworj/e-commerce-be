@@ -1,78 +1,35 @@
 import { getPrompt } from "../prompts/chat.prompts.js";
 import { connectDB } from "../config/mongo.client.js";
-import { openai } from "../config/lmm.config.js";
+import { AiResponse } from "./Gpt.js";
 
 export const getChatResponse = async (question) => {
   try {
     const db = await connectDB();
     const prompt = await getPrompt(question);
-    console.log("Generated prompt:", prompt);
 
-    const gptResponse = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a helpful assistant that writes MongoDB queries and summaries.",
-        },
-        { role: "user", content: prompt },
-      ],
+    const response = await AiResponse({ prompt });
+
+    if (!response.collection || !Array.isArray(response.options?.aggregate)) {
+      throw new Error(
+        "Invalid response format: missing collection or aggregate pipeline."
+      );
+    }
+    const collection = db.collection(response.collection);
+    const result = await collection
+      .aggregate(response.options.aggregate)
+      .toArray();
+
+      console.log(111111111111,result);
+
+    const userResponse = await AiResponse({
+      UserQuestion: question ,
+      response:  JSON.stringify(result),
     });
 
-    const raw = gptResponse.choices[0].message?.content;
-    console.log("LLM raw output:", raw);
-
-    const response = JSON.parse(raw);
-
-    let result, finalResponse;
-    const collection = db.collection(response.collection);
-
-    if (response.type === "query") {
-      // Handle aggregation or normal query
-      if (response.options?.aggregate) {
-        result = await collection
-          .aggregate(response.options.aggregate)
-          .toArray();
-      } else {
-        result = await collection
-          .find(response.query, response.options || {})
-          .toArray();
-      }
-
-      console.log("LLM query result:", result);
-
-      finalResponse = {
-        type: "text",
-        text: response.explanation, // No placeholder replacement
-        data: result,
-      };
-    } else if (response.type === "chart") {
-      const chartData = await collection
-        .aggregate([
-          { $match: response.query },
-          {
-            $group: {
-              _id: `$${response.xAxis}`,
-              value: { $sum: `$${response.yAxis}` },
-            },
-          },
-        ])
-        .toArray();
-
-      finalResponse = {
-        type: "chart",
-        chartType: response.chartType,
-        data: chartData,
-        explanation: response.explanation,
-        xAxis: response.xAxis,
-        yAxis: response.yAxis,
-      };
-    } else {
-      throw new Error("Unknown response type from LLM");
-    }
-
-    return finalResponse;
+    return {
+      type: "text",
+      data: userResponse, 
+    };
   } catch (err) {
     console.error("Error in getChatResponse:", err);
     return {
@@ -82,3 +39,4 @@ export const getChatResponse = async (question) => {
     };
   }
 };
+
