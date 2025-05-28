@@ -49,6 +49,7 @@ export const makePayment = async (req, res, next) => {
       status: "success",
       message: "Checkout session created successfully",
       url: session.url,
+      cart: cart,
     });
   } catch (error) {
     console.error("Error creating checkout session:", error);
@@ -69,10 +70,34 @@ export const verifyPaymentSession = async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
+    const cart = await stripe.checkout.sessions.listLineItems(session_id)
+
+    const detailedLineItems = await Promise.all(
+      cart.data.map(async item => {
+        const price = await stripe.prices.retrieve(item.price.id);
+        const product = await stripe.products.retrieve(price.product);
+
+        return {
+          lineItemId: item.id,
+          quantity: item.quantity,
+          amount_total: item.amount_total,
+          currency: item.currency,
+          price: price.unit_amount,
+          productName: product.name,
+          productDescription: product.description,
+          productImages: product.images,
+          productMetadata: product.metadata,
+        };
+      })
+    );
+
+    console.log(detailedLineItems, "cart after checkoout")
+
     res.json({
       verified: session.payment_status === "paid",
       status: session.payment_status,
       session,
+      cart: cart
     });
   } catch (err) {
     res.status(400).json({

@@ -55,7 +55,7 @@ export const createProductValidator = async (req, res, next) => {
     stock: Joi.number().required(),
     category: Joi.string().required(),
     images: Joi.array().max(4),
-    status:Joi.string().valid("active", "inactive")
+    status: Joi.string().valid("active", "inactive")
     // ratings: Joi.number().required(),
   });
   joiValidator(addProductSchema, req, res, next);
@@ -92,9 +92,9 @@ export const createOrderValidator = async (req, res, next) => {
     products: Joi.array()
       .items(
         Joi.object({
-          productId: Joi.string().hex().length(24).required(),
+          id: Joi.string().pattern(/^[a-z]{2}_[a-zA-Z0-9]+$/).required(),
           quantity: Joi.number().min(1).required(),
-        })
+        }).unknown(true)
       )
       .min(1)
       .required(),
