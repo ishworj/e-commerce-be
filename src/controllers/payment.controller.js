@@ -78,12 +78,12 @@ export const verifyPaymentSession = async (req, res) => {
         const product = await stripe.products.retrieve(price.product);
 
         return {
-          lineItemId: item.id,
+          id: item.id,
           quantity: item.quantity,
           amount_total: item.amount_total,
           currency: item.currency,
           price: price.unit_amount,
-          productName: product.name,
+          name: product.name,
           productDescription: product.description,
           productImages: product.images,
           productMetadata: product.metadata,
@@ -91,13 +91,12 @@ export const verifyPaymentSession = async (req, res) => {
       })
     );
 
-    console.log(detailedLineItems, "cart after checkoout")
 
     res.json({
       verified: session.payment_status === "paid",
       status: session.payment_status,
       session,
-      cart: cart
+      cart: detailedLineItems
     });
   } catch (err) {
     res.status(400).json({
