@@ -9,16 +9,17 @@ import {
 export const createOrder = async (req, res, next) => {
     try {
         req.body.userId = req.userData._id;
+        console.log(req.body, "order created ")
         req.body.status = "pending";
         const order = await createOrderDB(req.body);
         res.status(201).json({
             status: "success",
-            message: "Order created successfully",
+            message: "Finalised your order successfully...",
             order,
         });
     } catch (error) {
         next({
-            message: "Error while processing order",
+            message: "Error while creating order",
             errorMessage: error.message,
         });
     }
@@ -37,7 +38,7 @@ export const getOrder = async (req, res, next) => {
         }
         res.status(200).json({
             status: "success",
-            message: "Here are your orders",
+            message: "Here are your orders...",
             orders,
         });
     } catch (error) {
@@ -53,7 +54,7 @@ export const getAllOrders = async (req, res, next) => {
         const orders = await getAllOrderDB();
         res.status(200).json({
             status: "success",
-            message: "All orders",
+            message: "All orders are here!",
             orders,
         });
     } catch (error) {
@@ -79,12 +80,12 @@ export const updateOrder = async (req, res, next) => {
         const orderUpdated = await updateOrderDB(id, req.body);
         res.status(200).json({
             status: "success",
-            message: "Order updated",
+            message: "Order updated!",
             orderUpdated,
         });
     } catch (error) {
         next({
-            message: "Error while updating order",
+            message: "Error while updating order!",
             errorMessage: error.message,
         });
     }
