@@ -1,6 +1,8 @@
 import { insertAuthSession } from "../models/sessions/auth.session.model.js";
+import { SessionSchema } from "../models/sessions/session.schema.js";
 import {
   deleteUserById,
+  findUserById,
   getUserByEmail,
   registerUserModel,
   updateUser,
@@ -241,7 +243,6 @@ export const renewJwt = async (req, res, next) => {
     const email = req.user.email
     // recreate the access token
     const token = await jwtSign({ email: email });
-    console.log("dsfgsdfjgsd;lksdflk2")
     return res.status(200).json({
       status: "success",
       message: "Token Refreshed",
@@ -260,15 +261,15 @@ export const renewJwt = async (req, res, next) => {
 export const logoutUserController = async (req, res) => {
   try {
     const user = req.userData;
-
+    console.log(user, "user for logout")
     if (!user) {
       return res.status(400).json({
         status: "error",
-        message: "User not authenticated",
+        message: "No User found!",
       });
     }
 
-    const dbUser = await logoutUserById(_id);
+    const dbUser = await findUserById(user._id);
 
     if (!dbUser) {
       return res.status(400).json({
@@ -278,7 +279,7 @@ export const logoutUserController = async (req, res) => {
     }
 
     // remove the refresh token from the user email
-    dbUser.refreshToken = "";
+    dbUser.refreshJWT = "";
     await dbUser.save({ validateBeforeSave: false });
 
     //delete the session from the database associated with user email
