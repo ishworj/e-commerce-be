@@ -21,6 +21,6 @@ export const deleteUserById = (_id) => {
 };
 
 //logout user by id
-export const logoutUserById = (_id) => {
+export const findUserById = (_id) => {
   return UserSchema.findById(_id);
 };
