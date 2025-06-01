@@ -1,5 +1,6 @@
 import {
     createOrderDB,
+    deleteOrderDB,
     getAllOrderDB,
     getOneOrderDB,
     getOrderDB,
@@ -9,7 +10,6 @@ import {
 export const createOrder = async (req, res, next) => {
     try {
         req.body.userId = req.userData._id;
-        console.log(req.body, "order created ")
         req.body.status = "pending";
         const order = await createOrderDB(req.body);
         res.status(201).json({
@@ -29,13 +29,13 @@ export const getOrder = async (req, res, next) => {
     try {
         const orders = await getOrderDB({ userId: req.userData._id });
 
-        if (orders.length === 0) {
-            next({
-                statusCode: 404,
-                status: "fail",
-                message: "No orders found",
-            });
-        }
+        // if (orders.length === 0) {
+        //     next({
+        //         statusCode: 404,
+        //         status: "fail",
+        //         message: "No orders found",
+        //     });
+        // }
         res.status(200).json({
             status: "success",
             message: "Here are your orders...",
@@ -67,9 +67,10 @@ export const getAllOrders = async (req, res, next) => {
 
 export const updateOrder = async (req, res, next) => {
     try {
-        const id = req.params.id;
+        const data = req.body;
+        const { _id, ...rest } = data;
 
-        const order = await getOneOrderDB(id);
+        const order = await getOneOrderDB(_id);
         if (!order) {
             next({
                 statusCode: 404,
@@ -77,7 +78,7 @@ export const updateOrder = async (req, res, next) => {
                 message: "Order not found",
             });
         }
-        const orderUpdated = await updateOrderDB(id, req.body);
+        const orderUpdated = await updateOrderDB(_id, rest);
         res.status(200).json({
             status: "success",
             message: "Order updated!",
@@ -90,3 +91,26 @@ export const updateOrder = async (req, res, next) => {
         });
     }
 };
+
+export const deleteOrder = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const response = await deleteOrderDB(id);
+        if (!response) {
+            return res.status(404).json({
+                status: "error",
+                message: "Order Not Found!"
+            })
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "Order Deleted Successfully!",
+            response
+        })
+    } catch (error) {
+        next({
+            message: "Error while deleting the order!",
+            errorMessage: error.message,
+        });
+    }
+}

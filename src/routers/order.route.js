@@ -1,6 +1,7 @@
 import express from "express";
 import {
     createOrder,
+    deleteOrder,
     getAllOrders,
     getOrder,
     updateOrder,
@@ -20,11 +21,13 @@ router.get("/", authenticate, getOrder);
 router.get("/admin", authenticate, isAdmin, getAllOrders);
 
 router.put(
-    "/:id/status",
+    "/status",
     authenticate,
     isAdmin,
     updateOrderValidator,
     updateOrder
 );
+
+router.delete("/:id/delete", authenticate, isAdmin, deleteOrder)
 
 export default router;

@@ -94,6 +94,7 @@ export const createOrderValidator = async (req, res, next) => {
         Joi.object({
           id: Joi.string().pattern(/^[a-z]{2}_[a-zA-Z0-9]+$/).required(),
           quantity: Joi.number().min(1).required(),
+          shippingAddress: Joi.string().required()
         }).unknown(true)
       )
       .min(1)
@@ -108,8 +109,9 @@ export const createOrderValidator = async (req, res, next) => {
 
 export const updateOrderValidator = async (req, res, next) => {
   const updateOrderSchema = Joi.object({
+    _id: Joi.string().required(),
     status: Joi.string().valid("pending", "shipped", "delivered").required(),
-  });
+  }).unknown()
 
   joiValidator(updateOrderSchema, req, res, next);
 };

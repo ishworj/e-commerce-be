@@ -149,15 +149,19 @@ export const signInUserController = async (req, res, next) => {
 //edit the user
 export const updateUserController = async (req, res, next) => {
   try {
-    // const { _id } = req.params
-    const { _id, ...formObj } = req.body;
+    const { address } = req.body;
+    console.log(address)
+    const _id = req.userData._id
+    console.log(_id)
     if (!_id) {
-      return res.status(400).json({
+      return res.status(404).json({
         status: "error",
         message: "User not found",
       });
     }
-    const updatedUser = await updateUser(_id, formObj);
+
+    const updatedUser = await updateUser({ _id, address });
+    console.log(updatedUser, 888)
     updatedUser?._id
       ? res.json({
         status: "success",
