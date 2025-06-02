@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 import { findCart } from "../models/cart/cart.model.js";
+import { createInvoiceController } from "./invoice.controller.js";
+import { createOrderDB } from "../models/orders/order.model.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -58,7 +60,7 @@ export const makePayment = async (req, res, next) => {
       message: "payment failed",
       errorMessage: error?.message,
     });
-    res.status(500).json({ error: error.message });
+    // res.status(500).json({ error: error.message });
   }
 };
 
@@ -91,12 +93,16 @@ export const verifyPaymentSession = async (req, res) => {
       })
     );
 
-
+    // after verification, creating order
+    if (session && cart) {
+      const order = await createOrderDB(req.body);
+    }
     res.json({
       verified: session.payment_status === "paid",
       status: session.payment_status,
       session,
-      cart: detailedLineItems
+      cart: detailedLineItems,
+      order
     });
   } catch (err) {
     res.status(400).json({

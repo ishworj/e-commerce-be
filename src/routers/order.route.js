@@ -28,6 +28,6 @@ router.put(
     updateOrder
 );
 
-router.delete("/:id/delete", authenticate, isAdmin, deleteOrder)
+router.delete("/:id/delete", authenticate, deleteOrder)
 
 export default router;

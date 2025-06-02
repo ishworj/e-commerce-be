@@ -10,6 +10,7 @@ import {
 export const createOrder = async (req, res, next) => {
     try {
         req.body.userId = req.userData._id;
+        console.log(req.userData._id, "id")
         req.body.status = "pending";
         const order = await createOrderDB(req.body);
         res.status(201).json({

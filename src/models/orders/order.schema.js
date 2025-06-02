@@ -43,7 +43,6 @@ const OrderSchema = new mongoose.Schema(
     },
     shippingAddress: {
       type: String,
-      required: true
     }
   },
   { timestamps: true }
