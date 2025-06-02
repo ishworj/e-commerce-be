@@ -56,28 +56,29 @@ export const refreshAuthenticate = async (req, res, next) => {
     try {
         // take the token from the header as authorization
         const token = req.headers.authorization;
+        console.log("authenticate")
         // verify the refreshtoken
         const decodedData = await refreshJWTVerify(
             token,
             process.env.JWT_REFRESH_SECRET
         );
-
         // checking if the token gets verified and if there is token
         if (decodedData?.email) {
             // find the user
             const userData = await getUserByEmail({ email: decodedData.email });
-
-            if (userData && userData.refreshJWT == token) {
-                req.user = userData;
-                next();
-            } else {
-                next({
+            console.log(userData),
+                console.log(token)
+            console.log(userData.refreshJWT === token)
+            if (!userData || userData.refreshJWT !== token) {
+                return next({
                     statusCode: 401,
                     message: "Not Authenticated !!!",
                 });
             }
+            req.user = userData;
+            next();
         } else {
-            next({
+            return next({
                 statusCode: 401,
                 message: "Invalid Token!!!",
             });

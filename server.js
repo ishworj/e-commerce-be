@@ -11,6 +11,7 @@ import verifyEmailRouter from "./src/routers/verify.route.js";
 import cartRouter from "./src/routers/cart.route.js";
 import paymentRouter from "./src/routers/payment.route.js";
 import chatRouter from "./src/routers/chat.route.js";
+import invoiceRouter from "./src/routers/invoice.route.js";
 import { errorHandler } from "./src/middlewares/error.handler.js";
 
 const app = express();
@@ -49,6 +50,7 @@ app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/chat", chatRouter);
+app.use("/api/v1/invoice", invoiceRouter);
 
 // verifying error
 app.use("/verify-user", verifyEmailRouter);

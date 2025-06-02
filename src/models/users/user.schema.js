@@ -39,7 +39,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["admin", "customer"],
       default: "customer",
     },
-
+    address: {
+      type: String,
+      default: "N/A"
+    },
     image: {
       type: String,
       //   default: "default-profile.png",

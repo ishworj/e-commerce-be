@@ -100,14 +100,14 @@ export const signInUserController = async (req, res, next) => {
 
         const token = await jwtSign(tokenData);
         const refreshToken = await jwtRefreshSign(tokenData);
-
+        const obj = {
+          refreshJWT: refreshToken,
+        }
         const data = await updateUser(
           {
             email: user.email,
           },
-          {
-            refreshJWT: refreshToken,
-          }
+          obj
         );
 
         // removing the sensitive user data
@@ -149,15 +149,17 @@ export const signInUserController = async (req, res, next) => {
 //edit the user
 export const updateUserController = async (req, res, next) => {
   try {
-    // const { _id } = req.params
-    const { _id, ...formObj } = req.body;
+    const { address } = req.body;
+    const _id = req.userData._id
+
     if (!_id) {
-      return res.status(400).json({
+      return res.status(404).json({
         status: "error",
         message: "User not found",
       });
     }
-    const updatedUser = await updateUser(_id, formObj);
+
+    const updatedUser = await updateUser(_id, { address });
     updatedUser?._id
       ? res.json({
         status: "success",
@@ -241,6 +243,7 @@ export const getUserDetailController = async (req, res, next) => {
 export const renewJwt = async (req, res, next) => {
   try {
     const email = req.user.email
+    console.log("here", email)
     // recreate the access token
     const token = await jwtSign({ email: email });
     return res.status(200).json({

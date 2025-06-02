@@ -1,3 +1,4 @@
+
 import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema(
@@ -40,6 +41,9 @@ const OrderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    shippingAddress: {
+      type: String,
+    }
   },
   { timestamps: true }
 );
