@@ -17,7 +17,7 @@ export const makePayment = async (req, res, next) => {
         .json({ status: "error", message: "Cart is empty" });
       s;
     }
-
+    console.log(cart, "cart")
     // Prepare line items for Stripe
     const line_items = cart.cartItems.map((item) => ({
       price_data: {
@@ -72,13 +72,13 @@ export const verifyPaymentSession = async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
-    const cart = await stripe.checkout.sessions.listLineItems(session_id)
+    const cart = await stripe.checkout.sessions.listLineItems(session_id);
 
     const detailedLineItems = await Promise.all(
       cart.data.map(async item => {
         const price = await stripe.prices.retrieve(item.price.id);
         const product = await stripe.products.retrieve(price.product);
-
+        // console.log(price, "cart after verifying")
         return {
           id: item.id,
           quantity: item.quantity,
@@ -92,16 +92,26 @@ export const verifyPaymentSession = async (req, res) => {
         };
       })
     );
-
+    console.log(req.body, 4444)
+    const { shippingAddress, userId } = req.body
+    console.log(shippingAddress, userId)
     // after verification, creating order
-    if (session && cart) {
-      const order = await createOrderDB(req.body);
-    }
+    const order = (session && cart) ?
+      await createOrderDB({
+        products: detailedLineItems,
+        shippingAddress,
+        userId,
+        status: "pending",
+        totalAmount: detailedLineItems.reduce(
+          (sum, item) => sum + item.amount_total,
+          0
+        )
+      }) : ""
+
     res.json({
       verified: session.payment_status === "paid",
       status: session.payment_status,
       session,
-      cart: detailedLineItems,
       order
     });
   } catch (err) {

@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.get("/checkout", authenticate, makePayment);
 
-router.get("/verify-session", verifyPaymentSession);
+router.post("/verify-session", verifyPaymentSession);
 
 export default router;
