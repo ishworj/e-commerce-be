@@ -10,7 +10,6 @@ import {
 export const createOrder = async (req, res, next) => {
     try {
         req.body.userId = req.userData._id;
-        console.log(req.userData._id, "id")
         req.body.status = "pending";
         const order = await createOrderDB(req.body);
         res.status(201).json({
@@ -30,13 +29,6 @@ export const getOrder = async (req, res, next) => {
     try {
         const orders = await getOrderDB({ userId: req.userData._id });
 
-        // if (orders.length === 0) {
-        //     next({
-        //         statusCode: 404,
-        //         status: "fail",
-        //         message: "No orders found",
-        //     });
-        // }
         res.status(200).json({
             status: "success",
             message: "Here are your orders...",
