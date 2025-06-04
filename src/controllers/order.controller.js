@@ -1,6 +1,7 @@
 import {
     createOrderDB,
     deleteOrderDB,
+    deleteOrderItemDB,
     getAllOrderDB,
     getOneOrderDB,
     getOrderDB,
@@ -65,7 +66,7 @@ export const updateOrder = async (req, res, next) => {
 
         const order = await getOneOrderDB(_id);
         if (!order) {
-            next({
+            return next({
                 statusCode: 404,
                 status: "fail",
                 message: "Order not found",
@@ -78,7 +79,8 @@ export const updateOrder = async (req, res, next) => {
             orderUpdated,
         });
     } catch (error) {
-        next({
+        console.log(error?.message)
+        return next({
             message: "Error while updating order!",
             errorMessage: error.message,
         });
@@ -97,7 +99,30 @@ export const deleteOrder = async (req, res, next) => {
         }
         return res.status(200).json({
             status: "success",
-            message: "Order Deleted Successfully!",
+            message: "Order Cancelled!",
+            response
+        })
+    } catch (error) {
+        next({
+            message: "Error while deleting the order!",
+            errorMessage: error.message,
+        });
+    }
+}
+
+export const deleteOrderItem = async (req, res, next) => {
+    try {
+        const { id, ID } = req.params;
+        const response = await deleteOrderItemDB(id, ID);
+        if (!response) {
+            return res.status(404).json({
+                status: "error",
+                message: "Item Not Found!"
+            })
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "Item Deleted Successfully!",
             response
         })
     } catch (error) {

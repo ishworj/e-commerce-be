@@ -1,4 +1,5 @@
 
+import cartSchema from "./cart.schema.js"
 import CartSchema from "./cart.schema.js"
 
 // finding if the cart exist already
@@ -77,4 +78,7 @@ export const updateCartItem = (userId, _id, product) => {
             }
         },
         { new: true })
+}
+export const deleteCart = (userId) => {
+    return cartSchema.deleteOne({ userId }, { new: true })
 }

@@ -66,9 +66,9 @@ export const refreshAuthenticate = async (req, res, next) => {
         if (decodedData?.email) {
             // find the user
             const userData = await getUserByEmail({ email: decodedData.email });
-            console.log(userData),
-                console.log(token)
-            console.log(userData.refreshJWT === token)
+            // console.log(userData),
+            //     console.log(token)
+            // console.log(userData.refreshJWT === token)
             if (!userData || userData.refreshJWT !== token) {
                 return next({
                     statusCode: 401,

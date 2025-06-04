@@ -2,6 +2,7 @@ import express from "express";
 import {
     createOrder,
     deleteOrder,
+    deleteOrderItem,
     getAllOrders,
     getOrder,
     updateOrder,
@@ -21,7 +22,7 @@ router.get("/", authenticate, getOrder);
 router.get("/admin", authenticate, isAdmin, getAllOrders);
 
 router.put(
-    "/status",
+    "/",
     authenticate,
     isAdmin,
     updateOrderValidator,
@@ -29,5 +30,7 @@ router.put(
 );
 
 router.delete("/:id/delete", authenticate, deleteOrder)
+
+router.delete("/:id/delete/:ID", authenticate, isAdmin, deleteOrderItem)
 
 export default router;
