@@ -115,36 +115,31 @@ export const updateCartItems = async (req, res, next) => {
     try {
         const userId = req.userData._id
         const { quantity, _id, totalPrice } = req.body
-        const cart = await getCartItemByProductId(userId, _id)
+        // const cart = await getCartItemByProductId(userId, _id)
 
-        let zeroQuantityItemDeleted = false
-
-        for (const item of cart?.cartItems || []) {
-            if (item.quantity - 1 == 0) {
-                zeroQuantityItemDeleted = true
-                const response = await deleteCartItems(userId, item._id);
-                if (!response) {
-                    return next({
-                        statusCode: 404,
-                        message: `Could not remove item from the cart!`,
-                        response
-                    });
-                }
+        if (quantity === 0) {
+            const response = await deleteCartItems(userId, _id);
+            if (!response) {
+                return next({
+                    statusCode: 404,
+                    message: `Could not remove item from the cart!`,
+                    response
+                });
             }
         }
+
 
         const product = {
             quantity,
             costPrice: totalPrice
         }
-        if (!zeroQuantityItemDeleted) {
-            const response = await updateCartItem(userId, _id, product)
-            return res.status(200).json({
-                status: "success",
-                message: "Updated Successfully",
-                response
-            })
-        }
+        const response = await updateCartItem(userId, _id, product)
+        return res.status(200).json({
+            status: "success",
+            message: "Updated Successfully",
+            response
+        })
+
 
     } catch (error) {
         console.log(error)

@@ -69,5 +69,12 @@ export const getCartItemByProductId = (userId, _id) => {
     )
 }
 export const updateCartItem = (userId, _id, product) => {
-    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": _id }, { $set: { "cartItems.$.quantity": product.quantity, "cartItems.$.costPrice": product.costPrice } }, { new: true })
+    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": _id },
+        {
+            $set: {
+                "cartItems.$.quantity": product.quantity,
+                "cartItems.$.costPrice": product.costPrice
+            }
+        },
+        { new: true })
 }
