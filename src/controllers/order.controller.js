@@ -91,7 +91,7 @@ export const deleteOrder = async (req, res, next) => {
     try {
         const { id } = req.params;
         const response = await deleteOrderDB(id);
-        if (!response) {
+        if (!id) {
             return res.status(404).json({
                 status: "error",
                 message: "Order Not Found!"
@@ -119,6 +119,10 @@ export const deleteOrderItem = async (req, res, next) => {
                 status: "error",
                 message: "Item Not Found!"
             })
+        }
+        const order = await getOneOrderDB(id)
+        if (order.products.length <= 0) {
+            await deleteOrderDB(id)
         }
         return res.status(200).json({
             status: "success",
