@@ -110,7 +110,6 @@ export const createOrderValidator = async (req, res, next) => {
 export const updateOrderValidator = async (req, res, next) => {
   const updateOrderSchema = Joi.object({
     _id: Joi.string().required(),
-    status: Joi.string().valid("pending", "shipped", "delivered").required(),
   }).unknown()
 
   joiValidator(updateOrderSchema, req, res, next);

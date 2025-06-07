@@ -13,7 +13,8 @@ export const getAllOrderDB = () => {
 };
 
 export const updateOrderDB = (_id, updateObj) => {
-    return OrderSchema.findByIdAndUpdate(_id, updateObj, {
+    // console.log(updateObj, 999)
+    return OrderSchema.findByIdAndUpdate(_id, { $set: updateObj }, {
         new: true,
         runValidators: true,
     });
@@ -25,4 +26,14 @@ export const getOneOrderDB = (id) => {
 
 export const deleteOrderDB = (_id) => {
     return OrderSchema.findByIdAndDelete(_id, { new: true })
+}
+
+export const deleteOrderItemDB = (_id, ID) => {
+    return OrderSchema.findByIdAndUpdate(_id,
+        {
+            $pull: {
+                products: { id: ID }
+            }
+        },
+        { new: true })
 }
