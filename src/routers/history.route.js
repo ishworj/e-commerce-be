@@ -1,9 +1,9 @@
 import express from "express"
-import { createHistory, getHistory } from "../controllers/history.controller.js"
+import { createHistory, getUserRecommendation } from "../controllers/history.controller.js"
 
 const router = express.Router()
 
 router.post("/", createHistory)
-router.get("/", getHistory)
+router.get("/", getUserRecommendation)
 
 export default router
