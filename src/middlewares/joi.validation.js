@@ -65,7 +65,16 @@ export const createProductValidator = async (req, res, next) => {
 export const updateProductValidator = async (req, res, next) => {
   const updateProductSchema = Joi.object({
     name: Joi.string().required(),
-    description: Joi.string().required(),
+    description: Joi.string()
+      .min(10)             // Prevents too-short text
+      .max(5000)           // Adjust this based on your "1-page" limit
+      .trim()              // Removes leading/trailing spaces
+      .required()
+      .messages({
+        "string.min": "Description must be at least 10 characters long.",
+        "string.max": "Description is too long. Please keep it under 5000 characters.",
+        "any.required": "Description is required."
+      }),
     price: Joi.number().required(),
     stock: Joi.number().required(),
     category: Joi.string().required(),
@@ -106,7 +115,6 @@ export const createOrderValidator = async (req, res, next) => {
 };
 
 //update order by admin
-
 export const updateOrderValidator = async (req, res, next) => {
   const updateOrderSchema = Joi.object({
     _id: Joi.string().required(),

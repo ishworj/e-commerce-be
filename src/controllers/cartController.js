@@ -62,8 +62,7 @@ export const deleteCartItemController = async (req, res, next) => {
         const { _id } = req.body
         // finding the detail of the product
         const cart = await getCartItemByProductId(userId, _id)
-        console.log(cart, "cart")
-        console.log(cart?.cartItems?.[0], "deelete")
+
         if (!cart?.cartItems?.[0]) {
             return next({
                 statusCode: 404,

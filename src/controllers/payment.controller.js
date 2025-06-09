@@ -60,7 +60,6 @@ export const makePayment = async (req, res, next) => {
       message: "payment failed",
       errorMessage: error?.message,
     });
-    // res.status(500).json({ error: error.message });
   }
 };
 
@@ -92,9 +91,8 @@ export const verifyPaymentSession = async (req, res) => {
         };
       })
     );
-    console.log(req.body, 4444)
     const { shippingAddress, userId } = req.body
-    console.log(shippingAddress, userId)
+
     // after verification, creating order
     const order = (session && cart) ?
       await createOrderDB({

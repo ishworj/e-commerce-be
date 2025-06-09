@@ -9,9 +9,10 @@ import {
 
 export const createProduct = async (req, res, next) => {
   try {
-
     const imageUrls = req.files.map((file) => file.path); // Cloudinary URLs
     req.body.images = imageUrls;
+    console.log(imageUrls, "image urls")
+    console.log(req.body, "object sending to create product")
 
     const product = await createNewPoductDB(req.body);
 
@@ -23,6 +24,7 @@ export const createProduct = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error.message)
     next({
       statusCode: 500,
       message: "Error while adding the Product",
