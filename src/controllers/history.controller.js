@@ -8,14 +8,14 @@ export const getUserRecommendation = async (obj) => {
     // console.log(userId, guestSessionId, "getting req.body")
     const userHistory = (userId != null) ? await getUserHistory({ userId }) : await getUserHistory({ guestSessionId })
     // console.log(userHistory, "userHistoryu")
-    return userHistory
+    // return userHistory
+    return !!(userHistory && userHistory.length > 0);
 }
 export const createHistory = async (req, res, next) => {
     // console.log(req.body, "req")
     try {
-        const { userId, guestSessionId } = req.body
+        const { userId, guestSessionId, productId, categoryId, action } = req.body
         const dbData = await getUserRecommendation(req.body)
-        // console.log(dbData, 9999)
         const response = (dbData) ? await updateHistory(req.body) : await createUserHistory(req.body)
 
         if (!userId && !guestSessionId) {
@@ -24,13 +24,14 @@ export const createHistory = async (req, res, next) => {
                 message: "Missing something in req",
             })
         }
+        console.log(response)
         return res.status(200).json({
             status: "success",
             message: "added",
             response
         })
     } catch (error) {
-        console.log(error, 2323)
+        console.log(error?.message, 2323)
         return next({
             statusCode: 500,
             message: error?.message || "Internal error",
@@ -48,7 +49,7 @@ export const updateHistory = async (obj) => {
         action
     }
     const filter = userId != null ? { userId } : { guestSessionId }
-    // console.log(filter, "before being passed")
+    console.log(filter, "before being passed")
     if (!userId && !guestSessionId) {
         return res.status(400).json({
             status: "error",
@@ -56,12 +57,6 @@ export const updateHistory = async (obj) => {
         })
     }
     const response = await updateUserHistory(filter, history)
-    if (!response) {
-        return res.status(400).json({
-            status: "error",
-            message: "failed in adding and updating",
-        })
-    }
-    // console.log(response, "updated")
+    console.log(response, "updated")
     return response
 }

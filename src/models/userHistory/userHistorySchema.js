@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 
 const actionHistorySchemas = new mongoose.Schema({
@@ -19,22 +18,26 @@ const actionHistorySchemas = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-})
+});
+
 const userHistorySchemas = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
-        default: null
+        index: true,
+        sparse: true,
+        default: undefined
     },
     guestSessionId: {
         type: String,
-        default: null
+        index: true,
+        sparse: true,
+        default: undefined
     },
     history: [actionHistorySchemas]
-}, { timestamps: true })
+}, { timestamps: true });
 
+userHistorySchemas.index({ guestSessionId: 1 }, { sparse: true });
+userHistorySchemas.index({ userId: 1 }, { sparse: true });
 
-userHistorySchemas.index({ guestSessionId: 1 });
-userHistorySchemas.index({ userId: 1 });
-
-export default mongoose.model("UserBehaviour", userHistorySchemas)
+export default mongoose.model("UserBehaviour", userHistorySchemas);
