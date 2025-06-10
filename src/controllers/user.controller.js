@@ -116,12 +116,13 @@ export const signInUserController = async (req, res, next) => {
 
         if (isLogged) {
           req.userData = user;
+          const userInfo = req.userData
           return res.status(200).json({
             status: "success",
             message: "Logged in Successfully!!!",
             accessToken: token,
             refreshToken: refreshToken,
-            user,
+            userInfo,
           });
         } else {
           return res.status(400).json({
@@ -149,7 +150,7 @@ export const signInUserController = async (req, res, next) => {
 //edit the user
 export const updateUserController = async (req, res, next) => {
   try {
-    const { address } = req.body;
+    const obj = req.body;
     const _id = req.userData._id
 
     if (!_id) {
@@ -159,7 +160,7 @@ export const updateUserController = async (req, res, next) => {
       });
     }
 
-    const updatedUser = await updateUser(_id, { address });
+    const updatedUser = await updateUser(_id, obj);
     updatedUser?._id
       ? res.json({
         status: "success",
@@ -245,14 +246,15 @@ export const renewJwt = async (req, res, next) => {
     const email = req.user.email
     console.log("here", email)
     // recreate the access token
-    const token = await jwtSign({ email: email });
+    const token = await jwtSign({ email });
+
     return res.status(200).json({
       status: "success",
       message: "Token Refreshed",
       accessToken: token,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error.message, "error in renewjwt")
     next({
       errorMessage: error.message
     })

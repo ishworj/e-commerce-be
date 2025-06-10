@@ -1,12 +1,13 @@
 import React from "react";
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-
 // Styles
 const styles = StyleSheet.create({
-    page: { padding: 30, fontSize: 12, fontFamily: "Helvetica" },
-    header: { fontSize: 20, marginBottom: 10, textAlign: "right" },
-    subHeader: { fontSize: 10, textAlign: "right", marginBottom: 20 },
+    page: { padding: 30, fontSize: 12, fontFamily: "Helvetica", minHeight: "100vh" },
+    header: { fontSize: 20, marginBottom: 10, textAlign: "left" },
+    subHeader: { fontSize: 10, textAlign: "left", marginBottom: 20 },
+    mainHeader: { fontSize: 25, marginBottom: 10, textAlign: "center" },
     section: { marginBottom: 10 },
+    date: { marginBottom: 10, textAlign: 'right' },
     bold: { fontWeight: "bold" },
     row: { flexDirection: "row", justifyContent: "space-between", marginVertical: 4 },
     tableHeader: {
@@ -22,7 +23,8 @@ const styles = StyleSheet.create({
 
 
 // Component
-const Invoice = ({ order, invoiceNumber }) => {
+const Invoice = ({ order, customerName, invoiceNumber }) => {
+
     const productRows = order.products.map((product, index) => {
         const rate = product.amount_total / product.quantity;
 
@@ -42,22 +44,27 @@ const Invoice = ({ order, invoiceNumber }) => {
         React.createElement(
             Page,
             { style: styles.page },
+            // company logo 
+            React.createElement(
+                View,
+                { style: styles.mainHeader },
+                React.createElement(Text, null, "Company Name"),
+
+            ),
 
             // Header
             React.createElement(
                 View,
                 { invoiceNumber },
-                React.createElement(Text, { style: styles.header }, "Delivery Report"),
+                React.createElement(Text, { style: styles.header }, "Invoice"),
                 React.createElement(Text, { style: styles.subHeader }, `#INV-${invoiceNumber}`)
             ),
 
             // Order info
             React.createElement(
                 View,
-                { style: styles.section },
-                React.createElement(Text, null, `Date: ${new Date(order.createdAt).toDateString()}`),
-                React.createElement(Text, null, "Payment Terms: Invoice"),
-                React.createElement(Text, { style: styles.bold }, "Balance Due: $0.00")
+                { style: styles.date },
+                React.createElement(Text, null, `Date: ${new Date(order.createdAt).toDateString()}`)
             ),
 
             // Billing info
@@ -65,7 +72,7 @@ const Invoice = ({ order, invoiceNumber }) => {
                 View,
                 { style: styles.section },
                 React.createElement(Text, { style: styles.bold }, "Bill To:"),
-                React.createElement(Text, null, "Sai Sandeep")
+                React.createElement(Text, null, `${customerName}`)
             ),
 
             // Table headers
