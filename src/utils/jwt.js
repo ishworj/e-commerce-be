@@ -3,7 +3,7 @@ import { insertSession } from "../models/sessions/session.model.js";
 
 // creating a token
 export const jwtSign = (tokenData) => {
-    console.log(111111)
+    console.log("it is inside the jwtsign")
     const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     });

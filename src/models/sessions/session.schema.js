@@ -26,7 +26,7 @@ const AuthSession = new mongoose.Schema(
         expiresAt:
         {
             type: Date,
-            default: new Date(Date.now() + 3600000),
+            default: new Date(Date.now() + 60000),
             expires: 0
         }
     }, { timestamps: true })
