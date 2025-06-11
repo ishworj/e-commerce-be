@@ -27,7 +27,6 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("combined"));
 }
 
-//  hello this is the example
 // Run server here
 app.use(express.json());
 

@@ -9,6 +9,7 @@ export const getWishList = (filter) => {
 }
 
 export const deleteWishList = (filter) => {
+    console.log(filter, 999)
     return wishListSchema.findOneAndDelete(filter, { new: true })
 }
 
