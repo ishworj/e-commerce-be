@@ -13,6 +13,8 @@ import paymentRouter from "./src/routers/payment.route.js";
 import chatRouter from "./src/routers/chat.route.js";
 import invoiceRouter from "./src/routers/invoice.route.js";
 import historyRouter from "./src/routers/history.route.js";
+import wishListRouter from "./src/routers/wishList.route.js";
+
 import { errorHandler } from "./src/middlewares/error.handler.js";
 
 const app = express();
@@ -52,7 +54,8 @@ app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/invoice", invoiceRouter);
-app.use("/api/v1/history", historyRouter)
+app.use("/api/v1/history", historyRouter);
+app.use("/api/v1/wishlist", wishListRouter);
 
 // verifying error
 app.use("/verify-user", verifyEmailRouter);
