@@ -1,0 +1,42 @@
+import express from "express";
+import {
+  deleteUserController,
+  getUserDetailController,
+  logoutUserController,
+  registerUserController,
+  renewJwt,
+  signInUserController,
+  updateUserController,
+} from "../controllers/user.controller.js";
+import { authenticate, isAdmin, refreshAuthenticate } from "../middlewares/auth.middleware.js";
+import {
+  createUserValidator,
+  singinUserValidator,
+} from "../middlewares/joi.validation.js";
+
+const router = express.Router();
+
+// routers
+
+// registering the user
+router.post("/register", createUserValidator, registerUserController);
+
+// signing the user
+router.post("/signin", singinUserValidator, signInUserController);
+
+// get user detail
+router.get("/", authenticate, getUserDetailController);
+
+//update user
+router.put("/", authenticate, updateUserController);
+
+//delete user
+router.delete("/:_id", authenticate, isAdmin, deleteUserController);
+
+// renew-jwt
+router.get("/renew-jwt", refreshAuthenticate, renewJwt);
+
+//logout
+router.get("/logout", authenticate, logoutUserController);
+
+export default router;
