@@ -11,6 +11,8 @@ export const getActivePoductsDB = () => {
     return ProductSchema.find({ status: "active" });
 };
 export const getSingleProduct = (id) => {
+    console.log(id)
+
     return ProductSchema.findOne({ _id: id })
 }
 export const updateProductDB = (id, updateObj) => {

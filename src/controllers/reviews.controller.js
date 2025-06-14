@@ -1,3 +1,5 @@
+
+import { getSingleProduct, updateProductDB } from "../models/products/product.model.js";
 import {
     getActiveReview,
     getAllReview,
@@ -6,8 +8,33 @@ import {
 
 export const createReview = async (req, res, next) => {
     try {
-        const reviewObj = req.body;
+        const { userId, productId, rating, comment } = req.body;
+        console.log(typeof (productId))
+        const product = await getSingleProduct(productId)
+        const { email, fName, lName } = req.userData
+        if (!product) {
+            return next({
+                statusCode: 404,
+                message: "No such Product in Db"
+            });
+        }
+        const { images, name } = product
+        const reviewObj = {
+            userId,
+            userName: fName + " " + lName,
+            email: email,
+            userImage: "/default.png",
+            productId,
+            productName: name,
+            productImage: images[0],
+            rating,
+            comment
+        }
         const review = await insertReview(reviewObj);
+
+        await updateProductDB(productId, {
+            $push: { reviews: review._id }
+        })
 
         if (!review._id) {
             return next({
@@ -66,13 +93,13 @@ export const getPubReviews = async (req, res, async) => {
                 message: "Couldnot fetch the reviews!",
                 errorMessage: "No Reviews, Error while fetching the reviewas",
             });
-        } else {
-            return res.status(200).json({
-                status: "success",
-                message: "Successfully, fetched review!",
-                reviews,
-            });
         }
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully, fetched review!",
+            reviews,
+        });
+
     } catch (error) {
         return next({
             statusCode: 500,

@@ -25,6 +25,9 @@ export const makePayment = async (req, res, next) => {
         product_data: {
           name: item.name,
           images: item.images,
+          metadata: {
+            productId: String(item._id)
+          }
         },
         unit_amount: item.price * 100, // Stripe expects amount in cents
       },
@@ -66,7 +69,6 @@ export const makePayment = async (req, res, next) => {
 
 export const verifyPaymentSession = async (req, res) => {
   const { session_id } = req.query;
-  console.log("session_id", session_id);
 
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
@@ -77,9 +79,12 @@ export const verifyPaymentSession = async (req, res) => {
       cart.data.map(async item => {
         const price = await stripe.prices.retrieve(item.price.id);
         const product = await stripe.products.retrieve(price.product);
-        // console.log(price, "cart after verifying")
+        console.log(price, "cart after verifying")
+
+        console.log(cart, 99999)
+        console.log(product, 88888)
         return {
-          id: item.id,
+          _id: product.metadata.productId,
           quantity: item.quantity,
           amount_total: item.amount_total,
           currency: item.currency,
