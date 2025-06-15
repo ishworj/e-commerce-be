@@ -5,6 +5,7 @@ import {
   logoutUserController,
   registerUserController,
   renewJwt,
+  resendVerificationMail,
   signInUserController,
   updateUserController,
 } from "../controllers/user.controller.js";
@@ -38,5 +39,8 @@ router.get("/renew-jwt", refreshAuthenticate, renewJwt);
 
 //logout
 router.get("/logout", authenticate, logoutUserController);
+
+// resending the verification Mail
+router.post("/verification-email", resendVerificationMail)
 
 export default router;

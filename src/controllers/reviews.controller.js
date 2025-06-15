@@ -1,9 +1,11 @@
 
 import { getSingleProduct, updateProductDB } from "../models/products/product.model.js";
 import {
+    deleteReview,
     getActiveReview,
     getAllReview,
     insertReview,
+    updateReview,
 } from "../models/reviews/review.model.js";
 
 export const createReview = async (req, res, next) => {
@@ -57,6 +59,7 @@ export const createReview = async (req, res, next) => {
         });
     }
 };
+
 export const getAllReviewsController = async (req, res, next) => {
     try {
         const reviews = await getAllReview();
@@ -108,3 +111,45 @@ export const getPubReviews = async (req, res, async) => {
         });
     }
 };
+
+export const updateReviewController = async (req, res, next) => {
+    try {
+        const { _id, approved } = req.body
+        const update = await updateReview(_id, { approved })
+        if (!update) {
+            return next({
+                statusCode: 404,
+                message: "Couldnot update the review!",
+            });
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully, updated review!",
+            update,
+        });
+    } catch (error) {
+        return next({
+            statusCode: 500,
+            message: "Internal Error while fetching the review!",
+            errorMessage: error?.message,
+        });
+    }
+}
+export const deleteReviewController = async (req, res, next) => {
+    try {
+        const { id } = req.body
+        const deletingReview = await deleteReview(id)
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully, deleted review!",
+            deletingReview,
+        });
+    } catch (error) {
+        console.log(error?.message)
+        return next({
+            statusCode: 500,
+            message: "Internal Error while deleting the review!",
+            errorMessage: error?.message,
+        });
+    }
+}
