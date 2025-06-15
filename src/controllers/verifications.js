@@ -84,6 +84,7 @@ export const verifyEmail = async (req, res, next) => {
         });
     }
 }
+
 export const sendOTP = async (req, res, next) => {
     try {
         const generateRandomNumber = () => {
@@ -120,6 +121,7 @@ export const sendOTP = async (req, res, next) => {
         })
     }
 }
+
 // verifying the OTP 
 export const verifyOTP = async (req, res, next) => {
     try {
@@ -156,10 +158,13 @@ export const verifyOTP = async (req, res, next) => {
         });
     }
 }
+
 export const verifyUser = async (req, res, next) => {
     try {
         const sessionId = req.query.sessionId;
         const token = req.query.t;
+
+        console.log(sessionId, token)
         if (!sessionId || !token) {
             return next({
                 statusCode: 404,
@@ -169,7 +174,8 @@ export const verifyUser = async (req, res, next) => {
         }
 
         const session = await findAuthSessionById(sessionId);
-        console.log(session, "session")
+
+        console.log(session)
 
         if (!session || session.token !== token) {
             return next({
@@ -181,19 +187,19 @@ export const verifyUser = async (req, res, next) => {
 
         // marking the user as verified
         const userEmail = session.associate;
-        console.log(userEmail, "email")
         // find the user
         const user = await getUserByEmail({ email: userEmail });
+        console.log(user)
         if (!user) {
             return next({
                 statusCode: 404,
                 message: "Verification failed!!!",
-                errorMessage: "Missing User with the given email!",
+                errorMessage: "No user found with such email!",
             });
         }
-        await updateUser({ email: userEmail }, { verified: true })
-        await findAuthSessionByIdandDelete({ _id: sessionId })
-
+        const update = await updateUser({ email: userEmail }, { verified: true })
+        if (update) { await findAuthSessionByIdandDelete({ _id: sessionId }) }
+        console.log(update)
         return res.status(200).json({
             status: "success",
             message: "Verification Successful!"

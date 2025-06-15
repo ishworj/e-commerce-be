@@ -1,4 +1,4 @@
-import { insertAuthSession } from "../models/sessions/auth.session.model.js";
+import { findAuthSession, findAuthSessionAndDelete, insertAuthSession } from "../models/sessions/auth.session.model.js";
 import { SessionSchema } from "../models/sessions/session.schema.js";
 import {
   deleteUserById,
@@ -28,14 +28,13 @@ export const registerUserController = async (req, res, next) => {
     };
     const user = await registerUserModel(formObj);
 
-    console.log(user, 333);
+    // console.log(user, 333);
     if (!user?._id) {
       return res.status(401).json({
         status: "error",
         message: "User Registration Failed!!!",
       });
     }
-
     const session = await insertAuthSession({
       token: uuidv4(),
       associate: user.email,
@@ -295,7 +294,7 @@ export const logoutUserController = async (req, res) => {
       message: "logged out successfully",
     });
   } catch (error) {
-    console.log(error);
+    console.log(error?.message);
     return res.status(500).json({
       status: "error",
       message: "Internal server error",
@@ -303,3 +302,55 @@ export const logoutUserController = async (req, res) => {
     });
   }
 };
+
+export const resendVerificationMail = async (req, res, next) => {
+  try {
+    const { email } = req.body
+
+    const user = await getUserByEmail({ email })
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "No user with such email"
+      })
+    }
+    const authSessionExisting = await findAuthSession({ associate: email })
+
+    if (authSessionExisting) {
+      const deletePreviousAuthSession = await findAuthSessionAndDelete({ associate: email })
+    }
+
+    const session = await insertAuthSession({
+      token: uuidv4(),
+      associate: email,
+    });
+    if (!session._id) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email sending failed! Verification process aborted!",
+      });
+    }
+    const url = `${process.env.ROOT_URL}/verify-user?sessionId=${session._id}&t=${session.token}`;
+
+    const activationEmail = await userActivatedEmail({
+      email: user.email,
+      userName: user.fName,
+      url,
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message:
+        "Please check your email to activate your account!",
+      user,
+    });
+  } catch (error) {
+    console.log(error?.message);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      errorMessage: error?.message,
+    });
+  }
+}
