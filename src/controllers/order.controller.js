@@ -1,5 +1,4 @@
 import {
-    createOrderDB,
     deleteOrderDB,
     deleteOrderItemDB,
     getAllOrderDB,
@@ -7,24 +6,28 @@ import {
     getOrderDB,
     updateOrderDB,
 } from "../models/orders/order.model.js";
+import { findUserById } from "../models/users/user.model.js";
+import { deliveredOrderEmail, shipOrderEmail } from "../services/email.service.js";
 
-export const createOrder = async (req, res, next) => {
-    try {
-        req.body.userId = req.userData._id;
-        req.body.status = "pending";
-        const order = await createOrderDB(req.body);
-        res.status(201).json({
-            status: "success",
-            message: "Finalised your order successfully...",
-            order,
-        });
-    } catch (error) {
-        next({
-            message: "Error while creating order",
-            errorMessage: error.message,
-        });
-    }
-};
+// export const createOrder = async (req, res, next) => {
+//     try {
+//         req.body.userId = req.userData._id;
+//         console.log(req.userData)
+//         req.body.status = "pending";
+//         const order = await createOrderDB(req.body)
+
+//         res.status(201).json({
+//             status: "success",
+//             message: "Finalised your order successfully...",
+//             order,
+//         });
+//     } catch (error) {
+//         return next({
+//             message: "Error while creating order",
+//             errorMessage: error.message,
+//         });
+//     }
+// };
 
 export const getOrder = async (req, res, next) => {
     try {
@@ -62,9 +65,9 @@ export const getAllOrders = async (req, res, next) => {
 export const updateOrder = async (req, res, next) => {
     try {
         const data = req.body;
-        const { _id, ...rest } = data;
-
+        const { _id, status } = data;
         const order = await getOneOrderDB(_id);
+        const user = await findUserById(order.userId)
         if (!order) {
             return next({
                 statusCode: 404,
@@ -72,7 +75,20 @@ export const updateOrder = async (req, res, next) => {
                 message: "Order not found",
             });
         }
-        const orderUpdated = await updateOrderDB(_id, rest);
+        const orderUpdated = await updateOrderDB(_id, { status });
+
+        // send the mail for the order status
+        const obj = {
+            userName: user.fName + " " + user.lName,
+            email: user.email,
+            order
+        }
+        if (status === "shipped") {
+            await shipOrderEmail(obj)
+        } else if (status === "delivered") {
+            await deliveredOrderEmail(obj)
+        }
+        // userName, email, order
         res.status(200).json({
             status: "success",
             message: "Order updated!",

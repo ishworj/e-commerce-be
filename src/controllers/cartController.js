@@ -19,7 +19,7 @@ export const createCartController = async (req, res, next) => {
         const productResponse = await getSingleProduct(_id);
         const { price } = productResponse;
         const costPrice = (price * quantity);
-        console.log(costPrice)
+        // console.log(costPrice)
         const product = { quantity: quantity ?? 1, price, costPrice, ...productResponse._doc }
 
         const existingCart = await findCart(userId)
