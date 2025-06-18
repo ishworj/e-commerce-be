@@ -1,6 +1,6 @@
 import express from "express";
 import {
-    createOrder,
+    // createOrder,
     deleteOrder,
     deleteOrderItem,
     getAllOrders,
@@ -15,19 +15,13 @@ import {
 
 const router = express.Router();
 
-router.post("/", authenticate, createOrderValidator, createOrder);
+// router.post("/", authenticate, createOrderValidator, createOrder);
 
 router.get("/", authenticate, getOrder);
 
 router.get("/admin", authenticate, isAdmin, getAllOrders);
 
-router.put(
-    "/",
-    authenticate,
-    isAdmin,
-    updateOrderValidator,
-    updateOrder
-);
+router.put("/", authenticate, isAdmin, updateOrderValidator, updateOrder);
 
 router.delete("/:id/delete", authenticate, deleteOrder)
 

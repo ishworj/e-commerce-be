@@ -8,6 +8,11 @@ const OrderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    paymentIntent: {
+      type: String,
+      required: true,
+      unique: true
+    },
     products: [
       {
         _id: {
@@ -46,9 +51,23 @@ const OrderSchema = new mongoose.Schema(
     },
     shippingAddress: {
       type: String,
+    },
+    expectedDeliveryDate: {
+      type: Date
     }
   },
   { timestamps: true }
 );
+
+OrderSchema.pre("save", function (next) {
+  if (!this.expectedDeliveryDate) {
+    const deliveryBufferDays = 5;
+    const baseDate = this.createdAt || new Date();
+    const expectedDate = new Date(baseDate);
+    expectedDate.setDate(baseDate.getDate() + deliveryBufferDays)
+    this.expectedDeliveryDate = expectedDate;
+  }
+  next()
+})
 
 export default mongoose.model("Order", OrderSchema);

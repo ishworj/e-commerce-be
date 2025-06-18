@@ -41,11 +41,10 @@ const UserSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      default: "N/A"
+      default: ""
     },
     image: {
       type: String,
-      //   default: "default-profile.png",
     },
     refreshJWT: {
       type: String,
