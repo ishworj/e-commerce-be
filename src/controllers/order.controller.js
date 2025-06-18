@@ -1,4 +1,5 @@
 import {
+    createOrderDB,
     deleteOrderDB,
     deleteOrderItemDB,
     getAllOrderDB,
@@ -6,33 +7,35 @@ import {
     getOrderDB,
     updateOrderDB,
 } from "../models/orders/order.model.js";
+import Order from "../models/orders/order.schema.js";
+
 import { findUserById } from "../models/users/user.model.js";
 import { deliveredOrderEmail, shipOrderEmail } from "../services/email.service.js";
+import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
 
-// export const createOrder = async (req, res, next) => {
-//     try {
-//         req.body.userId = req.userData._id;
-//         console.log(req.userData)
-//         req.body.status = "pending";
-//         const order = await createOrderDB(req.body)
+export const createOrder = async (req, res, next) => {
+    try {
+        req.body.userId = req.userData._id;
+        console.log(req.userData)
+        req.body.status = "pending";
+        const order = await createOrderDB(req.body)
 
-//         res.status(201).json({
-//             status: "success",
-//             message: "Finalised your order successfully...",
-//             order,
-//         });
-//     } catch (error) {
-//         return next({
-//             message: "Error while creating order",
-//             errorMessage: error.message,
-//         });
-//     }
-// };
+        res.status(201).json({
+            status: "success",
+            message: "Finalised your order successfully...",
+            order,
+        });
+    } catch (error) {
+        return next({
+            message: "Error while creating order",
+            errorMessage: error.message,
+        });
+    }
+};
 
 export const getOrder = async (req, res, next) => {
     try {
-        const orders = await getOrderDB({ userId: req.userData._id });
-
+        const orders = await getPaginatedDataFilter(Order, req, { userId: req.userData._id })
         res.status(200).json({
             status: "success",
             message: "Here are your orders...",
@@ -48,7 +51,7 @@ export const getOrder = async (req, res, next) => {
 
 export const getAllOrders = async (req, res, next) => {
     try {
-        const orders = await getAllOrderDB();
+        const orders = await getPaginatedData(Order, req)
         res.status(200).json({
             status: "success",
             message: "All orders are here!",
