@@ -1,7 +1,6 @@
 import {
   createNewPoductDB,
   deleteProductDB,
-  getActivePoductsDB,
   getSingleProduct,
   updateProductDB,
 } from "../models/products/product.model.js";
@@ -78,6 +77,7 @@ export const getPublicProducts = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error?.message)
     next({
       statusCode: 500,
       message: "Error while getting the Products",
@@ -88,14 +88,22 @@ export const getPublicProducts = async (req, res, next) => {
 // getting the product using id
 export const getProductById = async (req, res, next) => {
   try {
+    console.log(req.params.id)
     const product = await getSingleProduct(req.params.id);
     console.log(product, 909);
+    if (!product) {
+      return next({
+        status: "error",
+        message: "Product Not Found"
+      });
+    }
     return res.status(200).json({
       status: "success",
       message: "Fetched Product",
       product,
     });
   } catch (error) {
+    console.log(error?.message)
     next({
       statusCode: 500,
       message: "Error while getting the Products",
