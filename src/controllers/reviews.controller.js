@@ -7,6 +7,8 @@ import {
     insertReview,
     updateReview,
 } from "../models/reviews/review.model.js";
+import Review from "../models/reviews/review.schema.js";
+import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
 
 export const createReview = async (req, res, next) => {
     try {
@@ -62,7 +64,8 @@ export const createReview = async (req, res, next) => {
 
 export const getAllReviewsController = async (req, res, next) => {
     try {
-        const reviews = await getAllReview();
+        // const reviews = await getAllReview();
+        const reviews = await getPaginatedData(Review, req)
 
         if (!reviews) {
             return next({
@@ -88,7 +91,7 @@ export const getAllReviewsController = async (req, res, next) => {
 
 export const getPubReviews = async (req, res, async) => {
     try {
-        const reviews = await getActiveReview();
+        const reviews = await getPaginatedDataFilter(Review, req, { approved: true })
 
         if (!reviews) {
             return next({
@@ -135,6 +138,7 @@ export const updateReviewController = async (req, res, next) => {
         });
     }
 }
+
 export const deleteReviewController = async (req, res, next) => {
     try {
         const { id } = req.body
