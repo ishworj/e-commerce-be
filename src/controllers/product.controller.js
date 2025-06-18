@@ -104,7 +104,7 @@ export const getProductById = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
   try {
     let { oldImages, ...rest } = req.body;
-    console.log(rest);
+
     oldImages = JSON.parse(oldImages || "[]");
     const newImages = req.files.map((file) => file.path);
     const allImages = [...oldImages, ...newImages];

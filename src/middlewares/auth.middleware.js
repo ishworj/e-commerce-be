@@ -3,6 +3,7 @@ import { getUserByEmail } from "../models/users/user.model.js";
 import { jwtVerify, refreshJWTVerify } from "../utils/jwt.js";
 
 export const authenticate = async (req, res, next) => {
+
     try {
         // 1.get the token from the headers
         const token = req.headers.authorization;

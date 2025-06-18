@@ -1,7 +1,8 @@
 import Stripe from "stripe";
 import { findCart } from "../models/cart/cart.model.js";
-import { createInvoiceController } from "./invoice.controller.js";
-import { createOrderDB } from "../models/orders/order.model.js";
+import { createOrderDB, getOrderDB } from "../models/orders/order.model.js";
+import { findUserById } from "../models/users/user.model.js";
+import { createOrderEmail } from "../services/email.service.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -17,7 +18,7 @@ export const makePayment = async (req, res, next) => {
         .json({ status: "error", message: "Cart is empty" });
       s;
     }
-    console.log(cart, "cart")
+    // console.log(cart, "cart")
     // Prepare line items for Stripe
     const line_items = cart.cartItems.map((item) => ({
       price_data: {
@@ -25,6 +26,9 @@ export const makePayment = async (req, res, next) => {
         product_data: {
           name: item.name,
           images: item.images,
+          metadata: {
+            productId: String(item._id)
+          }
         },
         unit_amount: item.price * 100, // Stripe expects amount in cents
       },
@@ -66,20 +70,20 @@ export const makePayment = async (req, res, next) => {
 
 export const verifyPaymentSession = async (req, res) => {
   const { session_id } = req.query;
-  console.log("session_id", session_id);
 
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
     const cart = await stripe.checkout.sessions.listLineItems(session_id);
-
+    const paymentIntent = session.payment_intent
     const detailedLineItems = await Promise.all(
       cart.data.map(async item => {
         const price = await stripe.prices.retrieve(item.price.id);
         const product = await stripe.products.retrieve(price.product);
         // console.log(price, "cart after verifying")
+
         return {
-          id: item.id,
+          _id: product.metadata.productId,
           quantity: item.quantity,
           amount_total: item.amount_total,
           currency: item.currency,
@@ -93,25 +97,48 @@ export const verifyPaymentSession = async (req, res) => {
     );
     const { shippingAddress, userId } = req.body
 
-    // after verification, creating order
-    const order = (session && cart) ?
-      await createOrderDB({
-        products: detailedLineItems,
-        shippingAddress,
-        userId,
-        status: "pending",
-        totalAmount: detailedLineItems.reduce(
-          (sum, item) => sum + item.amount_total,
-          0
-        )
-      }) : ""
+    const existingOrder = await getOrderDB({ paymentIntent })
 
-    res.json({
-      verified: session.payment_status === "paid",
-      status: session.payment_status,
-      session,
-      order
-    });
+    if (existingOrder.length <= 0) {
+      // after verification, creating order
+      const order = (session && cart) ?
+        await createOrderDB({
+          paymentIntent,
+          products: detailedLineItems,
+          shippingAddress,
+          userId,
+          status: "pending",
+          totalAmount: detailedLineItems.reduce(
+            (sum, item) => sum + item.amount_total,
+            0
+          )
+        }) : ""
+      const user = await findUserById(userId)
+      if (order) {
+        const obj = {
+          userName: user.fName + ' ' + user.lName,
+          email: user.email,
+          order,
+        }
+        await createOrderEmail(obj)
+        console.log("email sent")
+        console.log(obj)
+      }
+      return res.json({
+        verified: session.payment_status === "paid",
+        status: session.payment_status,
+        session,
+        order
+      });
+    } else {
+      const order = existingOrder[0]
+      return res.json({
+        verified: session.payment_status === "paid",
+        status: session.payment_status,
+        session,
+        order
+      });
+    }
   } catch (err) {
     res.status(400).json({
       verified: false,
