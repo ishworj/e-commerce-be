@@ -2,10 +2,11 @@ import {
   createNewPoductDB,
   deleteProductDB,
   getActivePoductsDB,
-  getAllPoductsDB,
   getSingleProduct,
   updateProductDB,
 } from "../models/products/product.model.js";
+import Product from "../models/products/product.schema.js";
+import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
 
 export const createProduct = async (req, res, next) => {
   try {
@@ -35,7 +36,8 @@ export const createProduct = async (req, res, next) => {
 
 export const getAllProducts = async (req, res, next) => {
   try {
-    const products = await getAllPoductsDB();
+    // const products = await getAllPoductsDB();
+    const products = await getPaginatedData(Product, req)
 
     if (products) {
       return res.status(200).json({
@@ -60,7 +62,8 @@ export const getAllProducts = async (req, res, next) => {
 
 export const getPublicProducts = async (req, res, next) => {
   try {
-    const products = await getActivePoductsDB();
+    // const products = await getActivePoductsDB();
+    const products = await getPaginatedDataFilter(Product, req, { status: "active" })
 
     if (products) {
       return res.status(200).json({

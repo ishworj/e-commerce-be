@@ -1,5 +1,6 @@
 
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2"
 
 const OrderSchema = new mongoose.Schema(
   {
@@ -58,6 +59,8 @@ const OrderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+OrderSchema.plugin(mongoosePaginate)
 
 OrderSchema.pre("save", function (next) {
   if (!this.expectedDeliveryDate) {
