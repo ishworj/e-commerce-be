@@ -1,6 +1,8 @@
 import express from "express";
 import {
-    createOrder,
+    // createOrder,
+    deleteOrder,
+    deleteOrderItem,
     getAllOrders,
     getOrder,
     updateOrder,
@@ -13,18 +15,16 @@ import {
 
 const router = express.Router();
 
-router.post("/", authenticate, createOrderValidator, createOrder);
+// router.post("/", authenticate, createOrderValidator, createOrder);
 
 router.get("/", authenticate, getOrder);
 
 router.get("/admin", authenticate, isAdmin, getAllOrders);
 
-router.put(
-    "/:id/status",
-    authenticate,
-    isAdmin,
-    updateOrderValidator,
-    updateOrder
-);
+router.put("/", authenticate, isAdmin, updateOrderValidator, updateOrder);
+
+router.delete("/:id/delete", authenticate, deleteOrder)
+
+router.delete("/:id/delete/:ID", authenticate, isAdmin, deleteOrderItem)
 
 export default router;

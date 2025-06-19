@@ -1,4 +1,5 @@
 
+import cartSchema from "./cart.schema.js"
 import CartSchema from "./cart.schema.js"
 
 // finding if the cart exist already
@@ -61,12 +62,23 @@ export const deleteCartItems = (userId, _id) => {
         { new: true }
     )
 }
-export const getCartItemByProductId = (_id) => {
+export const getCartItemByProductId = (userId, _id) => {
+    console.log(userId, _id, 4444)
     return CartSchema.findOne(
-        { "cartItems._id": _id },
+        { userId, "cartItems._id": _id },
         { "cartItems.$": 1 }
     )
 }
 export const updateCartItem = (userId, _id, product) => {
-    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": _id }, { $set: { "cartItems.$.quantity": product.quantity, "cartItems.$.costPrice": product.costPrice } }, { new: true })
+    return CartSchema.findOneAndUpdate({ userId, "cartItems._id": _id },
+        {
+            $set: {
+                "cartItems.$.quantity": product.quantity,
+                "cartItems.$.costPrice": product.costPrice
+            }
+        },
+        { new: true })
+}
+export const deleteCart = (userId) => {
+    return cartSchema.deleteOne({ userId }, { new: true })
 }

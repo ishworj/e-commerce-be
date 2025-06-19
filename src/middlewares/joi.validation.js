@@ -54,8 +54,9 @@ export const createProductValidator = async (req, res, next) => {
     price: Joi.number().required(),
     stock: Joi.number().required(),
     category: Joi.string().required(),
-    images: Joi.array(),
-    ratings: Joi.number().required(),
+    images: Joi.array().max(4),
+    status: Joi.string().valid("active", "inactive")
+    // ratings: Joi.number().required(),
   });
   joiValidator(addProductSchema, req, res, next);
 };
@@ -64,7 +65,16 @@ export const createProductValidator = async (req, res, next) => {
 export const updateProductValidator = async (req, res, next) => {
   const updateProductSchema = Joi.object({
     name: Joi.string().required(),
-    description: Joi.string().required(),
+    description: Joi.string()
+      .min(10)             // Prevents too-short text
+      .max(5000)           // Adjust this based on your "1-page" limit
+      .trim()              // Removes leading/trailing spaces
+      .required()
+      .messages({
+        "string.min": "Description must be at least 10 characters long.",
+        "string.max": "Description is too long. Please keep it under 5000 characters.",
+        "any.required": "Description is required."
+      }),
     price: Joi.number().required(),
     stock: Joi.number().required(),
     category: Joi.string().required(),
@@ -91,24 +101,24 @@ export const createOrderValidator = async (req, res, next) => {
     products: Joi.array()
       .items(
         Joi.object({
-          productId: Joi.string().hex().length(24).required(),
+          id: Joi.string().pattern(/^[a-z]{2}_[a-zA-Z0-9]+$/).required(),
           quantity: Joi.number().min(1).required(),
-        })
+        }).unknown(true)
       )
       .min(1)
       .required(),
     totalAmount: Joi.number().min(1).required(),
+    shippingAddress: Joi.string()
   });
 
   joiValidator(createOrderSchema, req, res, next);
 };
 
 //update order by admin
-
 export const updateOrderValidator = async (req, res, next) => {
   const updateOrderSchema = Joi.object({
-    status: Joi.string().valid("pending", "shipped", "delivered").required(),
-  });
+    _id: Joi.string().required(),
+  }).unknown()
 
   joiValidator(updateOrderSchema, req, res, next);
 };

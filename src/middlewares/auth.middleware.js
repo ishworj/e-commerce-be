@@ -1,8 +1,9 @@
 import { findToken } from "../models/sessions/session.model.js";
 import { getUserByEmail } from "../models/users/user.model.js";
-import { jwtVerify } from "../utils/jwt.js";
+import { jwtVerify, refreshJWTVerify } from "../utils/jwt.js";
 
 export const authenticate = async (req, res, next) => {
+
     try {
         // 1.get the token from the headers
         const token = req.headers.authorization;
@@ -17,7 +18,7 @@ export const authenticate = async (req, res, next) => {
         if (!tokenFromDb) {
             return res.status(401).json({
                 status: "error",
-                message: "Authentication Failes",
+                message: "Authentication Failed!",
                 errorMessage: "Token not found in the database"
             });
         }
@@ -56,27 +57,28 @@ export const refreshAuthenticate = async (req, res, next) => {
     try {
         // take the token from the header as authorization
         const token = req.headers.authorization;
+        console.log(token)
         // verify the refreshtoken
         const decodedData = await refreshJWTVerify(
             token,
             process.env.JWT_REFRESH_SECRET
         );
-
+        console.log(decodedData, "decodedata")
         // checking if the token gets verified and if there is token
         if (decodedData?.email) {
             // find the user
-            const userData = await getUserByEmail({ email });
-            if (userData && userData.refreshJWT == token) {
-                req.user = userData;
-                next();
-            } else {
-                next({
+            const userData = await getUserByEmail({ email: decodedData.email });
+            console.log(userData, 8888)
+            if (!userData || userData.refreshJWT !== token) {
+                return next({
                     statusCode: 401,
                     message: "Not Authenticated !!!",
                 });
             }
+            req.user = userData;
+            next();
         } else {
-            next({
+            return next({
                 statusCode: 401,
                 message: "Invalid Token!!!",
             });

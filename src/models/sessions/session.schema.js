@@ -26,7 +26,7 @@ const AuthSession = new mongoose.Schema(
         expiresAt:
         {
             type: Date,
-            default: new Date(Date.now() + 3600000),
+            default: new Date(Date.now() + 60000),
             expires: 0
         }
     }, { timestamps: true })
@@ -50,3 +50,4 @@ const OtpSession = new mongoose.Schema({
 export const SessionSchema = mongoose.model("session", Session)
 export const AuthSessionSchema = mongoose.model("authSession", AuthSession)
 export const OtpSessionSchema = mongoose.model("Otp", OtpSession)
+

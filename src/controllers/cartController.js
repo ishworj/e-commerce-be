@@ -1,5 +1,5 @@
 
-import { createCart, deleteCartItems, findCart, findCartAndAdd, findProductInCart, findProductInCartAndAdd, getCartItemByProductId, updateCartItem } from "../models/cart/cart.model.js"
+import { createCart, deleteCart, deleteCartItems, findCart, findCartAndAdd, findProductInCart, findProductInCartAndAdd, getCartItemByProductId, updateCartItem } from "../models/cart/cart.model.js"
 import { getSingleProduct } from "../models/products/product.model.js"
 
 // creating the cart 
@@ -19,7 +19,7 @@ export const createCartController = async (req, res, next) => {
         const productResponse = await getSingleProduct(_id);
         const { price } = productResponse;
         const costPrice = (price * quantity);
-        console.log(costPrice)
+        // console.log(costPrice)
         const product = { quantity: quantity ?? 1, price, costPrice, ...productResponse._doc }
 
         const existingCart = await findCart(userId)
@@ -61,8 +61,8 @@ export const deleteCartItemController = async (req, res, next) => {
         const userId = req.userData._id;
         const { _id } = req.body
         // finding the detail of the product
-        const cart = await getCartItemByProductId(_id)
-        console.log(cart?.cartItems?.[0], "deelete")
+        const cart = await getCartItemByProductId(userId, _id)
+
         if (!cart?.cartItems?.[0]) {
             return next({
                 statusCode: 404,
@@ -75,7 +75,8 @@ export const deleteCartItemController = async (req, res, next) => {
         if (!response) {
             return next({
                 statusCode: 404,
-                message: "Couldnot remove the item from the cart!"
+                message: "Couldnot remove the item from the cart!",
+                response
             })
         }
 
@@ -112,14 +113,24 @@ export const fetchCart = async (req, res, next) => {
 export const updateCartItems = async (req, res, next) => {
     try {
         const userId = req.userData._id
-        const { quantity, _id } = req.body
-        const cart = await getCartItemByProductId(_id)
-        console.log(cart?.cartItems?.[0], "ssdf")
-        const { price } = cart?.cartItems?.[0];
-        console.log(price, 22)
+        const { quantity, _id, totalPrice } = req.body
+        // const cart = await getCartItemByProductId(userId, _id)
+
+        if (quantity === 0) {
+            const response = await deleteCartItems(userId, _id);
+            if (!response) {
+                return next({
+                    statusCode: 404,
+                    message: `Could not remove item from the cart!`,
+                    response
+                });
+            }
+        }
+
+
         const product = {
             quantity,
-            costPrice: quantity * price
+            costPrice: totalPrice
         }
         const response = await updateCartItem(userId, _id, product)
         return res.status(200).json({
@@ -127,7 +138,36 @@ export const updateCartItems = async (req, res, next) => {
             message: "Updated Successfully",
             response
         })
+
+
     } catch (error) {
+        console.log(error)
+        next({
+            statusCode: 500,
+            message: "Internal Error",
+            errorMessage: error?.message
+        })
+    }
+}
+// deleting the cart 
+export const deleteCartController = async (req, res, next) => {
+    try {
+        const userId = req.userData._id
+
+        const cartDeletion = await deleteCart(userId);
+        if (!cartDeletion) {
+            return res.status(400).json({
+                status: "error",
+                message: "Problem in removing the cart!"
+            })
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "Cart Removed",
+            cartDeletion
+        })
+    } catch (error) {
+        console.log(error)
         next({
             statusCode: 500,
             message: "Internal Error",

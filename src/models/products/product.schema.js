@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2"
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -13,7 +14,7 @@ const ProductSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      maxlength: 500,
+      maxlength: 5000,
     },
     price: {
       type: Number,
@@ -29,7 +30,11 @@ const ProductSchema = new mongoose.Schema(
     },
     images: [String],
 
-    ratings: [Number],
+    ratings: {
+      type: [Number],
+      default: [0],
+    },
+
     reviews: [
       {
         type: mongoose.Types.ObjectId,
@@ -39,5 +44,9 @@ const ProductSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+
+ProductSchema.plugin(mongoosePaginate)
+
 
 export default mongoose.model("Product", ProductSchema);

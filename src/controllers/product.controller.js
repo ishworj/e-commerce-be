@@ -1,14 +1,19 @@
 import {
   createNewPoductDB,
   deleteProductDB,
-  getActivePoductsDB,
-  getAllPoductsDB,
   getSingleProduct,
   updateProductDB,
 } from "../models/products/product.model.js";
+import Product from "../models/products/product.schema.js";
+import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
 
 export const createProduct = async (req, res, next) => {
   try {
+    const imageUrls = req.files.map((file) => file.path); // Cloudinary URLs
+    req.body.images = imageUrls;
+    console.log(imageUrls, "image urls")
+    console.log(req.body, "object sending to create product")
+
     const product = await createNewPoductDB(req.body);
 
     if (product?._id) {
@@ -19,6 +24,7 @@ export const createProduct = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error.message)
     next({
       statusCode: 500,
       message: "Error while adding the Product",
@@ -29,7 +35,8 @@ export const createProduct = async (req, res, next) => {
 
 export const getAllProducts = async (req, res, next) => {
   try {
-    const products = await getAllPoductsDB();
+    // const products = await getAllPoductsDB();
+    const products = await getPaginatedData(Product, req)
 
     if (products) {
       return res.status(200).json({
@@ -54,7 +61,8 @@ export const getAllProducts = async (req, res, next) => {
 
 export const getPublicProducts = async (req, res, next) => {
   try {
-    const products = await getActivePoductsDB();
+    // const products = await getActivePoductsDB();
+    const products = await getPaginatedDataFilter(Product, req, { status: "active" })
 
     if (products) {
       return res.status(200).json({
@@ -69,6 +77,7 @@ export const getPublicProducts = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error?.message)
     next({
       statusCode: 500,
       message: "Error while getting the Products",
@@ -79,14 +88,22 @@ export const getPublicProducts = async (req, res, next) => {
 // getting the product using id
 export const getProductById = async (req, res, next) => {
   try {
+    console.log(req.params.id)
     const product = await getSingleProduct(req.params.id);
     console.log(product, 909);
+    if (!product) {
+      return next({
+        status: "error",
+        message: "Product Not Found"
+      });
+    }
     return res.status(200).json({
       status: "success",
       message: "Fetched Product",
       product,
     });
   } catch (error) {
+    console.log(error?.message)
     next({
       statusCode: 500,
       message: "Error while getting the Products",
@@ -97,7 +114,15 @@ export const getProductById = async (req, res, next) => {
 
 export const updateProduct = async (req, res, next) => {
   try {
-    const updatedProduct = await updateProductDB(req.params.id, req.body);
+    let { oldImages, ...rest } = req.body;
+
+    oldImages = JSON.parse(oldImages || "[]");
+    const newImages = req.files.map((file) => file.path);
+    const allImages = [...oldImages, ...newImages];
+
+    const updateObj = { ...rest, images: allImages };
+
+    const updatedProduct = await updateProductDB(req.params.id, updateObj);
 
     if (updatedProduct?._id) {
       return res.json({

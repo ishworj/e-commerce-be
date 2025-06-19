@@ -1,4 +1,6 @@
-import mongoose, { Mongoose } from "mongoose";
+
+import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2"
 
 const ReviewSchema = new mongoose.Schema(
   {
@@ -7,9 +9,27 @@ const ReviewSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
+    productName: {
+      type: String,
+      required: true
+    },
+    productImage: {
+      type: String,
+      required: true
+    },
     userId: {
       type: mongoose.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    email: {
+      type: String
+    },
+    userName: {
+      type: String
+    },
+    userImage: {
+      type: String,
       required: true,
     },
     rating: {
@@ -28,5 +48,6 @@ const ReviewSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+ReviewSchema.plugin(mongoosePaginate)
 
 export default mongoose.model("Review", ReviewSchema);

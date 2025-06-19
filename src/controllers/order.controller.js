@@ -1,24 +1,33 @@
 import {
     createOrderDB,
+    deleteOrderDB,
+    deleteOrderItemDB,
     getAllOrderDB,
     getOneOrderDB,
     getOrderDB,
     updateOrderDB,
 } from "../models/orders/order.model.js";
+import Order from "../models/orders/order.schema.js";
+
+import { findUserById } from "../models/users/user.model.js";
+import { deliveredOrderEmail, shipOrderEmail } from "../services/email.service.js";
+import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
 
 export const createOrder = async (req, res, next) => {
     try {
         req.body.userId = req.userData._id;
+        console.log(req.userData)
         req.body.status = "pending";
-        const order = await createOrderDB(req.body);
+        const order = await createOrderDB(req.body)
+
         res.status(201).json({
             status: "success",
-            message: "Order created successfully",
+            message: "Finalised your order successfully...",
             order,
         });
     } catch (error) {
-        next({
-            message: "Error while processing order",
+        return next({
+            message: "Error while creating order",
             errorMessage: error.message,
         });
     }
@@ -26,18 +35,10 @@ export const createOrder = async (req, res, next) => {
 
 export const getOrder = async (req, res, next) => {
     try {
-        const orders = await getOrderDB({ userId: req.userData._id });
-
-        if (orders.length === 0) {
-            next({
-                statusCode: 404,
-                status: "fail",
-                message: "No orders found",
-            });
-        }
+        const orders = await getPaginatedDataFilter(Order, req, { userId: req.userData._id })
         res.status(200).json({
             status: "success",
-            message: "Here are your orders",
+            message: "Here are your orders...",
             orders,
         });
     } catch (error) {
@@ -50,10 +51,10 @@ export const getOrder = async (req, res, next) => {
 
 export const getAllOrders = async (req, res, next) => {
     try {
-        const orders = await getAllOrderDB();
+        const orders = await getPaginatedData(Order, req)
         res.status(200).json({
             status: "success",
-            message: "All orders",
+            message: "All orders are here!",
             orders,
         });
     } catch (error) {
@@ -66,26 +67,91 @@ export const getAllOrders = async (req, res, next) => {
 
 export const updateOrder = async (req, res, next) => {
     try {
-        const id = req.params.id;
-
-        const order = await getOneOrderDB(id);
+        const data = req.body;
+        const { _id, status } = data;
+        const order = await getOneOrderDB(_id);
+        const user = await findUserById(order.userId)
         if (!order) {
-            next({
+            return next({
                 statusCode: 404,
                 status: "fail",
                 message: "Order not found",
             });
         }
-        const orderUpdated = await updateOrderDB(id, req.body);
+        const orderUpdated = await updateOrderDB(_id, { status });
+
+        // send the mail for the order status
+        const obj = {
+            userName: user.fName + " " + user.lName,
+            email: user.email,
+            order
+        }
+        if (status === "shipped") {
+            await shipOrderEmail(obj)
+        } else if (status === "delivered") {
+            await deliveredOrderEmail(obj)
+        }
+        // userName, email, order
         res.status(200).json({
             status: "success",
-            message: "Order updated",
+            message: "Order updated!",
             orderUpdated,
         });
     } catch (error) {
-        next({
-            message: "Error while updating order",
+        console.log(error?.message)
+        return next({
+            message: "Error while updating order!",
             errorMessage: error.message,
         });
     }
 };
+
+export const deleteOrder = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const response = await deleteOrderDB(id);
+        if (!id) {
+            return res.status(404).json({
+                status: "error",
+                message: "Order Not Found!"
+            })
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "Order Cancelled!",
+            response
+        })
+    } catch (error) {
+        next({
+            message: "Error while deleting the order!",
+            errorMessage: error.message,
+        });
+    }
+}
+
+export const deleteOrderItem = async (req, res, next) => {
+    try {
+        const { id, ID } = req.params;
+        const response = await deleteOrderItemDB(id, ID);
+        if (!response) {
+            return res.status(404).json({
+                status: "error",
+                message: "Item Not Found!"
+            })
+        }
+        const order = await getOneOrderDB(id)
+        if (order.products.length <= 0) {
+            await deleteOrderDB(id)
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "Item Deleted Successfully!",
+            response
+        })
+    } catch (error) {
+        next({
+            message: "Error while deleting the order!",
+            errorMessage: error.message,
+        });
+    }
+}

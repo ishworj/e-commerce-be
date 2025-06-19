@@ -11,8 +11,8 @@ export const getUserByEmail = (email) => {
 };
 
 //update user
-export const updateUser = (filter, formObj) => {
-  return UserSchema.findOneAndUpdate(filter, formObj, { new: true });
+export const updateUser = (filter, obj) => {
+  return UserSchema.findOneAndUpdate(filter, { $set: obj }, { new: true });
 };
 
 //delete user by id
@@ -21,6 +21,6 @@ export const deleteUserById = (_id) => {
 };
 
 //logout user by id
-export const logoutUserById = (_id) => {
+export const findUserById = (_id) => {
   return UserSchema.findById(_id);
 };
