@@ -30,7 +30,7 @@ if (process.env.NODE_ENV !== "production") {
 // Run server here
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173", "https://e-commerce-fe-delta-eight.vercel.app/"];
+const allowedOrigins = ["http://localhost:5173", "https://e-commerce-fe-delta-eight.vercel.app"];
 app.use(
   cors({
     origin: function (origin, callback) {
