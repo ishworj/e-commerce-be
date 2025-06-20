@@ -31,7 +31,7 @@ const ProductSchema = new mongoose.Schema(
     images: [String],
 
     ratings: {
-      type: [Number],
+      type: Number,
       default: [0],
     },
 
