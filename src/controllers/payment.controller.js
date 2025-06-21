@@ -137,15 +137,15 @@ export const verifyPaymentSession = async (req, res) => {
     for (let i of detailedLineItems) {
       const product = await getSingleProduct(i._id)
 
+      if (!product) {
+        return res.status(400).json({ status: "error", message: `Product not found in DB.` });
+      }
+
       const updateProduct = await ProductSchema.findOneAndUpdate(
         { _id: product._id, stock: { $gte: i.quantity } },
         { $inc: { stock: -i.quantity } },
         { new: true }
       )
-
-      if (updateProduct.stock <= 0) {
-        await updateProductDB(updateProduct._id, { status: "inactive" })
-      }
 
       if (!updateProduct) {
         // Safe refund in case of insufficient stock
@@ -163,6 +163,10 @@ export const verifyPaymentSession = async (req, res) => {
             error: refundError.message,
           });
         }
+      }
+
+      if (updateProduct.stock <= 0) {
+        await updateProductDB(updateProduct._id, { status: "inactive" })
       }
     }
 
