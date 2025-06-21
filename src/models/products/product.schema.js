@@ -23,6 +23,7 @@ const ProductSchema = new mongoose.Schema(
     stock: {
       type: Number,
       default: 0,
+      min: 0
     },
     category: {
       type: mongoose.Types.ObjectId,
@@ -32,7 +33,7 @@ const ProductSchema = new mongoose.Schema(
 
     ratings: {
       type: Number,
-      default: [0],
+      default: 0,
     },
 
     reviews: [
