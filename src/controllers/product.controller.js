@@ -111,7 +111,7 @@ export const getProductById = async (req, res, next) => {
     });
   }
 };
-
+// updating the product images
 export const updateProduct = async (req, res, next) => {
   try {
     let { oldImages, ...rest } = req.body;
@@ -144,6 +144,24 @@ export const updateProduct = async (req, res, next) => {
     });
   }
 };
+// updating the product 
+export const updateProductIndividually = async (req, res, next) => {
+  try {
+    const { ratings } = req.body
+    const data = await updateProductDB(req.params.id, { ratings })
+    return res.status(200).json({
+      status: "success",
+      message: "Updated",
+      data
+    })
+  } catch (error) {
+    return next({
+      statusCode: 500,
+      message: "Error while updating the Product",
+      errorMessage: error.message,
+    });
+  }
+}
 
 export const deleteProduct = async (req, res, next) => {
   try {

@@ -13,25 +13,25 @@ import { findUserById } from "../models/users/user.model.js";
 import { deliveredOrderEmail, shipOrderEmail } from "../services/email.service.js";
 import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
 
-export const createOrder = async (req, res, next) => {
-    try {
-        req.body.userId = req.userData._id;
-        console.log(req.userData)
-        req.body.status = "pending";
-        const order = await createOrderDB(req.body)
+// export const createOrder = async (req, res, next) => {
+//     try {
+//         req.body.userId = req.userData._id;
+//         console.log(req.userData)
+//         req.body.status = "pending";
+//         const order = await createOrderDB(req.body)
 
-        res.status(201).json({
-            status: "success",
-            message: "Finalised your order successfully...",
-            order,
-        });
-    } catch (error) {
-        return next({
-            message: "Error while creating order",
-            errorMessage: error.message,
-        });
-    }
-};
+//         res.status(201).json({
+//             status: "success",
+//             message: "Finalised your order successfully...",
+//             order,
+//         });
+//     } catch (error) {
+//         return next({
+//             message: "Error while creating order",
+//             errorMessage: error.message,
+//         });
+//     }
+// };
 
 export const getOrder = async (req, res, next) => {
     try {

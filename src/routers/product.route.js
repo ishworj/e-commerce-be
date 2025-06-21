@@ -6,6 +6,7 @@ import {
     getProductById,
     getPublicProducts,
     updateProduct,
+    updateProductIndividually,
 } from "../controllers/product.controller.js";
 import { createProductValidator } from "../middlewares/joi.validation.js";
 import { authenticate, isAdmin } from "../middlewares/auth.middleware.js";
@@ -26,6 +27,9 @@ router.get("/", authenticate, isAdmin, getAllProducts);
 
 // updating the product detail
 router.put("/:id", upload.array("images", 4), authenticate, isAdmin, updateProduct);
+
+// updating the product detail apart images 
+router.put("/rating/:id", authenticate, updateProductIndividually);
 
 // deleting the product
 router.delete("/:id", authenticate, isAdmin, deleteProduct);
