@@ -89,7 +89,7 @@ export const getAllReviewsController = async (req, res, next) => {
     }
 };
 
-export const getPubReviews = async (req, res, async) => {
+export const getPubReviews = async (req, res, next) => {
     try {
         const reviews = await getPaginatedDataFilter(Review, req, { approved: true })
 

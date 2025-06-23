@@ -17,7 +17,6 @@ export const OTPemail = async (obj) => {
 
 export const createOrderEmail = async (obj) => {
     const info = await eTransporter().sendMail(orderCreated(obj))
-    console.log("email being sent 2")
     return info.messageId;
 }
 

@@ -3,6 +3,16 @@ import { getOneOrderDB, updateOrderDB } from "../models/orders/order.model.js";
 import { findUserById } from "../models/users/user.model.js";
 import { generateInvoice } from "../services/generateInvoice.js";
 
+export const generateRandomInvoiceNumber = () => {
+    let invoiceNumber = "";
+    const string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const length = 8;
+    for (let i = 0; i < length; i++) {
+        let randomIndex = Math.floor(Math.random() * string.length)
+        invoiceNumber += string[randomIndex]
+    }
+    return invoiceNumber;
+}
 export const createInvoiceController = async (req, res, next) => {
     try {
         const id = req.params.id;
@@ -23,25 +33,10 @@ export const createInvoiceController = async (req, res, next) => {
         }
 
         // check if there is already an invoice created or not 
-        const invoiceExists = await getInvoice({ _id: order.invoiceId })
-
-        // if created then return it
-        if (invoiceExists) {
-            // some logic 
-        }
+        let invoice = await getInvoice({ _id: order.invoiceId })
 
         // if not created, then create one and store it in DB
-        if (!invoiceExists) {
-            const generateRandomInvoiceNumber = () => {
-                let invoiceNumber = "";
-                const string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                const length = 8;
-                for (let i = 0; i < length; i++) {
-                    let randomIndex = Math.floor(Math.random() * string.length)
-                    invoiceNumber += string[randomIndex]
-                }
-                return invoiceNumber;
-            }
+        if (!invoice) {
             const invoiceNumber = generateRandomInvoiceNumber()
             const user = await findUserById(order.userId)
 
@@ -65,22 +60,24 @@ export const createInvoiceController = async (req, res, next) => {
             }
 
             // store the invoice in DB
-            const invoiceDb = await createInvoice(invoiceObj)
-            const updateOrder = await updateOrderDB(id, { invoiceId: invoiceDb._id })
-            const invoiceStream = await generateInvoice(order, invoiceNumber);
-
-            if (!invoiceStream || typeof invoiceStream.pipe !== "function") {
-                return res.status(500).json({
-                    status: "error",
-                    message: "Failed to generate invoice stream",
-                });
-            }
-
-            res.setHeader("Content-Type", "application/pdf");
-            res.setHeader("Content-Disposition", `inline; filename=invoice_${id}.pdf`);
-
-            invoiceStream.pipe(res); // Pipe the PDF stream to the response
+            invoice = await createInvoice(invoiceObj)
+            await updateOrderDB(id, { invoiceId: invoice._id })
         }
+
+        // generate invoice
+        const invoiceStream = await generateInvoice(order, invoice.invoiceNumber);
+
+        if (!invoiceStream || typeof invoiceStream.pipe !== "function") {
+            return res.status(500).json({
+                status: "error",
+                message: "Failed to generate invoice stream",
+            });
+        }
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `inline; filename=invoice_${id}.pdf`);
+
+        invoiceStream.pipe(res); // Pipe the PDF stream to the response
+
     } catch (error) {
         console.error("Invoice generation error:", error);
         return next({
