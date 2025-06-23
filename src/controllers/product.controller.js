@@ -1,6 +1,7 @@
 import {
   createNewPoductDB,
   deleteProductDB,
+  getAllPoductsDB,
   getSingleProduct,
   updateProductDB,
 } from "../models/products/product.model.js";
@@ -58,7 +59,7 @@ export const getAllProducts = async (req, res, next) => {
     });
   }
 };
-
+// acc to the pagination
 export const getPublicProducts = async (req, res, next) => {
   try {
     // const products = await getActivePoductsDB();
@@ -174,16 +175,34 @@ export const deleteProduct = async (req, res, next) => {
         deletedProduct,
       });
     } else {
-      next({
+      return next({
         statusCode: 404,
         message: "Product not found",
       });
     }
   } catch (error) {
-    next({
+    return next({
       statusCode: 500,
       message: "Error while deleting the Product",
       errorMessage: error.message,
     });
   }
 };
+
+// get all the products
+export const getActiveProduct = async (req, res, next) => {
+  try {
+    const products = await getAllPoductsDB()
+    return res.json({
+      status: "success",
+      message: "Product fetched successfully",
+      products,
+    });
+  } catch (error) {
+    return next({
+      statusCode: 500,
+      message: "Error while deleting the Product",
+      errorMessage: error.message,
+    });
+  }
+}
