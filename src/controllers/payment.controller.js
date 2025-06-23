@@ -11,6 +11,7 @@ import { generateInvoice } from "../services/generateInvoice.js";
 import { streamToBuffer } from "../utils/streamToBuffer.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const origin = process.env.ROOT_URL + "/payment-result"
 
 export const makePayment = async (req, res, next) => {
   try {
@@ -44,13 +45,13 @@ export const makePayment = async (req, res, next) => {
       line_items,
       customer_email: user.email,
       mode: "payment",
-      success_url:
-        "http://localhost:5173/payment-result?success=true&session_id={CHECKOUT_SESSION_ID}",
-      cancel_url:
-        "http://localhost:5173/payment-result?success=false&session_id={CHECKOUT_SESSION_ID}",
+      // success_url:
+      //   "http://localhost:5173/payment-result?success=true&session_id={CHECKOUT_SESSION_ID}",
+      // cancel_url:
+      //   "http://localhost:5173/payment-result?success=false&session_id={CHECKOUT_SESSION_ID}",
 
-      //   success_url: `${origin}?success=true`, for production
-      //   cancel_url: `${origin}?canceled=true`,
+      success_url: `${origin}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}?success=false&session_id={CHECKOUT_SESSION_ID}`,
     });
 
     // Send the session URL
@@ -69,7 +70,6 @@ export const makePayment = async (req, res, next) => {
     });
   }
 };
-
 
 export const verifyPaymentSession = async (req, res) => {
   const { session_id } = req.query;
