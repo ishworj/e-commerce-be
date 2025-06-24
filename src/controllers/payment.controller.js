@@ -34,7 +34,7 @@ export const makePayment = async (req, res, next) => {
             productId: String(item._id)
           }
         },
-        unit_amount: item.price * 100, // Stripe expects amount in cents
+        unit_amount: item.price * 100,
       },
       quantity: item.quantity,
     }));
