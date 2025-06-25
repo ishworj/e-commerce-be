@@ -33,8 +33,8 @@ const Invoice = ({ order, customerName, invoiceNumber }) => {
             { key: index, style: styles.tableRow },
             React.createElement(Text, { style: { width: "40%" } }, product.name),
             React.createElement(Text, { style: { width: "20%", textAlign: "right" } }, product.quantity),
-            React.createElement(Text, { style: { width: "20%", textAlign: "right" } }, `$${rate}`),
-            React.createElement(Text, { style: { width: "20%", textAlign: "right" } }, `$${product.amount_total}`)
+            React.createElement(Text, { style: { width: "20%", textAlign: "right" } }, `$${(rate / 100).toFixed(2)}`),
+            React.createElement(Text, { style: { width: "20%", textAlign: "right" } }, `$${(product.amount_total / 100).toFixed(2)}`)
         );
     });
 
@@ -104,7 +104,7 @@ const Invoice = ({ order, customerName, invoiceNumber }) => {
                 React.createElement(
                     Text,
                     null,
-                    "This invoice is auto generated at the time of delivery. If there is any issue, contact provider."
+                    "This invoice is auto generated. If there is any issue, contact provider."
                 )
             )
         )

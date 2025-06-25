@@ -1,5 +1,5 @@
 
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2"
 
 const OrderSchema = new mongoose.Schema(
@@ -55,6 +55,10 @@ const OrderSchema = new mongoose.Schema(
     },
     expectedDeliveryDate: {
       type: Date
+    },
+    invoiceId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Invoice"
     }
   },
   { timestamps: true }

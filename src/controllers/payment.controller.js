@@ -1,12 +1,17 @@
 import Stripe from "stripe";
 import { findCart } from "../models/cart/cart.model.js";
-import { createOrderDB, getOrderDB } from "../models/orders/order.model.js";
+import { createOrderDB, getOrderDB, updateOrderDB } from "../models/orders/order.model.js";
 import { findUserById } from "../models/users/user.model.js";
 import { createOrderEmail } from "../services/email.service.js";
 import { getSingleProduct, updateProductDB } from "../models/products/product.model.js";
 import ProductSchema from "../models/products/product.schema.js";
+import { generateRandomInvoiceNumber } from "./invoice.controller.js";
+import { createInvoice, getInvoice } from "../models/invoices/invoices.model.js";
+import { generateInvoice } from "../services/generateInvoice.js";
+import { streamToBuffer } from "../utils/streamToBuffer.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const origin = process.env.ROOT_URL + "/payment-result"
 
 export const makePayment = async (req, res, next) => {
   try {
@@ -15,10 +20,7 @@ export const makePayment = async (req, res, next) => {
     const cart = await findCart(user._id);
 
     if (!cart || cart.cartItems.length === 0) {
-      return res
-        .status(400)
-        .json({ status: "error", message: "Cart is empty" });
-      s;
+      return res.status(400).json({ status: "error", message: "Cart is empty" });
     }
     // console.log(cart, "cart")
     // Prepare line items for Stripe
@@ -32,7 +34,7 @@ export const makePayment = async (req, res, next) => {
             productId: String(item._id)
           }
         },
-        unit_amount: item.price * 100, // Stripe expects amount in cents
+        unit_amount: item.price * 100,
       },
       quantity: item.quantity,
     }));
@@ -43,13 +45,13 @@ export const makePayment = async (req, res, next) => {
       line_items,
       customer_email: user.email,
       mode: "payment",
-      success_url:
-        "http://localhost:5173/payment-result?success=true&session_id={CHECKOUT_SESSION_ID}",
-      cancel_url:
-        "http://localhost:5173/payment-result?success=false&session_id={CHECKOUT_SESSION_ID}",
+      // success_url:
+      //   "http://localhost:5173/payment-result?success=true&session_id={CHECKOUT_SESSION_ID}",
+      // cancel_url:
+      //   "http://localhost:5173/payment-result?success=false&session_id={CHECKOUT_SESSION_ID}",
 
-      //   success_url: `${origin}?success=true`, for production
-      //   cancel_url: `${origin}?canceled=true`,
+      success_url: `${origin}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}?success=false&session_id={CHECKOUT_SESSION_ID}`,
     });
 
     // Send the session URL
@@ -69,7 +71,6 @@ export const makePayment = async (req, res, next) => {
   }
 };
 
-
 export const verifyPaymentSession = async (req, res) => {
   const { session_id } = req.query;
   if (!session_id) {
@@ -79,6 +80,8 @@ export const verifyPaymentSession = async (req, res) => {
     });
   }
 
+  let detailedLineItems = []
+  let orderVerified = false
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
@@ -105,7 +108,7 @@ export const verifyPaymentSession = async (req, res) => {
       });
     }
 
-    const detailedLineItems = await Promise.all(
+    detailedLineItems = await Promise.all(
       cart.data.map(async item => {
         const price = await stripe.prices.retrieve(item.price.id);
         const product = await stripe.products.retrieve(price.product);
@@ -146,6 +149,7 @@ export const verifyPaymentSession = async (req, res) => {
         { $inc: { stock: -i.quantity } },
         { new: true }
       )
+      console.log(updateProduct, i.quantity)
 
       if (!updateProduct) {
         // Safe refund in case of insufficient stock
@@ -161,6 +165,7 @@ export const verifyPaymentSession = async (req, res) => {
             status: "error",
             message: `Refund failed for ${product.name}. Please contact support.`,
             error: refundError.message,
+            verified: false
           });
         }
       }
@@ -195,28 +200,85 @@ export const verifyPaymentSession = async (req, res) => {
     })
 
     //  Email Confirmation
+    const user = await findUserById(userId)
 
     //  also we are missing the invoice to send to the email to the user
 
-    const user = await findUserById(userId)
+    const invoiceNumber = generateRandomInvoiceNumber();
+    const existingInvoice = await getInvoice({ orderId: order._id });
 
+    let invoiceRecord = existingInvoice;
+
+    if (!existingInvoice) {
+      // Create and store the invoice in DB
+      invoiceRecord = await createInvoice({
+        invoiceNumber,
+        orderId: order._id,
+        userId,
+        userName: `${user.fName} ${user.lName}`,
+        totalAmount: order.totalAmount,
+        shippingAddress: order.shippingAddress,
+        taxAmount: 0,
+        status: "paid",
+        products: order.products.map(key => ({
+          id: key.id,
+          name: key.name,
+          quantity: key.quantity,
+          amount_total: key.amount_total,
+          productImages: key.productImages || []
+        })),
+        notes: order.notes || ""
+      });
+
+      await updateOrderDB(order._id, { invoiceId: invoiceRecord._id });
+    }
+
+    // Generate the PDF stream for email
+    const invoiceStream = await generateInvoice(order, invoiceRecord.invoiceNumber);
+    const invoiceBuffer = await streamToBuffer(invoiceStream);
+
+    // Send confirmation email with PDF invoice
     await createOrderEmail({
       userName: `${user.fName} ${user.lName}`,
       email: user.email,
       order,
+      attachments: [
+        {
+          filename: `invoice_${invoiceRecord.invoiceNumber}.pdf`,
+          content: invoiceBuffer,
+        },
+      ],
     });
-
+    orderVerified = true
     return res.json({
       verified: true,
       status: session.payment_status,
+      message: "Verified!",
       session,
-      order,
+      order
     });
 
   } catch (err) {
-    res.status(400).json({
+    console.error("Error in verifyPaymentSession:", err.message);
+    return res.status(400).json({
       verified: false,
-      error: err.message,
+      error: err.message
     });
+
+  } finally {
+    if (!orderVerified && detailedLineItems.length) {
+      (async () => {
+        for (let i of detailedLineItems) {
+          const product = await getSingleProduct(i._id);
+          if (!product) continue;
+
+          await ProductSchema.findOneAndUpdate(
+            { _id: product._id },
+            { $inc: { stock: i.quantity } },
+            { new: true }
+          );
+        }
+      })().catch(console.error);
+    }
   }
-};
+}

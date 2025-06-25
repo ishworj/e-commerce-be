@@ -43,7 +43,7 @@ export const OTPemailTemplate = ({ OTP, userName, email }) => {
   })
 }
 
-export const orderCreated = ({ userName, email, order }) => {
+export const orderCreated = ({ userName, email, order, attachments = [] }) => {
   console.log("email being sent 1");
 
   return {
@@ -102,6 +102,7 @@ export const orderCreated = ({ userName, email, order }) => {
         <p style="margin: 0;"><strong>${process.env.COMPANY_NAME}</strong></p>
       </div>
     `,
+    attachments,
   };
 };
 

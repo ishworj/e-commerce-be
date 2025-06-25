@@ -2,6 +2,7 @@ import express from "express";
 import {
     createProduct,
     deleteProduct,
+    getActiveProduct,
     getAllProducts,
     getProductById,
     getPublicProducts,
@@ -19,8 +20,11 @@ router.post("/", upload.array("images", 4), createProductValidator, authenticate
 
 // getting all active products for the customer
 router.get("/active", getPublicProducts);
+// all the active products
+router.get("/active-products", getActiveProduct)
 
 router.get("/:id", getProductById)
+
 
 // getting all the products --- for admin including inactive products
 router.get("/", authenticate, isAdmin, getAllProducts);

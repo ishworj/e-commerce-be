@@ -3,7 +3,6 @@ import { getSingleProduct, updateProductDB } from "../models/products/product.mo
 import {
     deleteReview,
     getActiveReview,
-    getAllReview,
     insertReview,
     updateReview,
 } from "../models/reviews/review.model.js";
@@ -61,7 +60,7 @@ export const createReview = async (req, res, next) => {
         });
     }
 };
-
+// acc to the pagination 
 export const getAllReviewsController = async (req, res, next) => {
     try {
         // const reviews = await getAllReview();
@@ -88,10 +87,18 @@ export const getAllReviewsController = async (req, res, next) => {
         });
     }
 };
-
-export const getPubReviews = async (req, res, async) => {
+//  acc to the pagination
+export const getPubReviews = async (req, res, next) => {
     try {
-        const reviews = await getPaginatedDataFilter(Review, req, { approved: true })
+        const { productId } = req.query;
+
+        // Build filter conditionally
+        const filter = { approved: true };
+        if (productId) {
+            filter.productId = productId;
+        }
+
+        const reviews = await getPaginatedDataFilter(Review, req, filter)
 
         if (!reviews) {
             return next({
@@ -157,3 +164,28 @@ export const deleteReviewController = async (req, res, next) => {
         });
     }
 }
+// all the review for public no paginated data
+export const getAllPubReviews = async (req, res, next) => {
+    try {
+        const reviews = await getActiveReview()
+        if (!reviews) {
+            return next({
+                statusCode: 404,
+                message: "Couldnot fetch the reviews!",
+                errorMessage: "No Reviews, Error while fetching the reviewas",
+            });
+        }
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully, fetched review!",
+            reviews,
+        });
+
+    } catch (error) {
+        return next({
+            statusCode: 500,
+            message: "Internal Error while fetching the review!",
+            errorMessage: error?.message,
+        });
+    }
+};
