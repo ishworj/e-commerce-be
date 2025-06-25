@@ -53,6 +53,7 @@ export const fetchWishList = async (req, res, next) => {
         });
     }
 }
+
 export const deleteWishListController = async (req, res, next) => {
     try {
         const { id } = req.params

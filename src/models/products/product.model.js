@@ -1,4 +1,5 @@
 import ProductSchema from "./product.schema.js";
+
 export const createNewPoductDB = (newProductObj) => {
     return ProductSchema(newProductObj).save();
 };
@@ -14,6 +15,10 @@ export const getActivePoductsDB = () => {
 export const getSingleProduct = (id) => {
     console.log(id)
     return ProductSchema.findOne({ _id: id })
+}
+
+export const getProductWithFilter = (filter) => {
+    return ProductSchema.find(filter)
 }
 
 export const updateProductDB = (id, updateObj) => {
