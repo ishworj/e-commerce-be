@@ -315,10 +315,19 @@ export const resendVerificationMail = async (req, res, next) => {
         message: "No user with such email"
       })
     }
+
+    if (user.verified) {
+      return res.status(200).json({
+        status: "success",
+        message:
+          "Your Account is already Verified!",
+        user,
+      });
+    }
     const authSessionExisting = await findAuthSession({ associate: email })
 
     if (authSessionExisting) {
-      const deletePreviousAuthSession = await findAuthSessionAndDelete({ associate: email })
+      await findAuthSessionAndDelete({ associate: email })
     }
 
     const session = await insertAuthSession({
