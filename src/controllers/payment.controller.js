@@ -18,11 +18,10 @@ export const makePayment = async (req, res, next) => {
     // const origin = req.headers.origin;
     const user = req.userData;
     const cart = await findCart(user._id);
-
+    console.log(cart)
     if (!cart || cart.cartItems.length === 0) {
       return res.status(400).json({ status: "error", message: "Cart is empty" });
     }
-    // console.log(cart, "cart")
     // Prepare line items for Stripe
     const line_items = cart.cartItems.map((item) => ({
       price_data: {
@@ -34,7 +33,7 @@ export const makePayment = async (req, res, next) => {
             productId: String(item._id)
           }
         },
-        unit_amount: item.price * 100,
+        unit_amount: Math.round(item.price * 100),
       },
       quantity: item.quantity,
     }));
