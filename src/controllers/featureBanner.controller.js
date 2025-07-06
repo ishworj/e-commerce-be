@@ -5,11 +5,11 @@ export const createFeatureBannerController = async (req, res, next) => {
         const obj = { ...req.body }
 
         // Handle file uploads
-        if (req.files?.featureBannerImgUrl?.path) {
-            obj.featureBannerImgUrl = req.files.featureBannerImgUrl.path;
+        if (req.file?.path) {
+            obj.featureBannerImgUrl = req.file.path;
         }
 
-        console.log(req.files, 888888)
+        console.log(req.file, 888888)
 
         const newFeaturedBanner = await createFeatureBanner(obj)
 
@@ -26,9 +26,11 @@ export const createFeatureBannerController = async (req, res, next) => {
         })
 
     } catch (error) {
+        console.log(error)
         return next({
             status: "error",
-            message: error?.message
+            message: error?.message,
+            errorMessage: "Errorkdsfhkgklsdfsdkflg ljkdsfahgkjh"
         })
     }
 }
