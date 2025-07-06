@@ -7,12 +7,10 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "E-Commerce", // optional folder name
-    allowed_formats: ["jpg", "png", "jpeg"],
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
   },
 });
 
 const upload = multer({ storage: storage });
-
-
 
 export default upload;

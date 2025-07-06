@@ -3,25 +3,28 @@ import mongoose from "mongoose";
 
 const FeatureBannerSchema = new mongoose.Schema(
     {
+        title: {
+            type: String,
+            required: true
+        },
+
         featureBannerImgUrl: {
             type: String,
             required: true
         },
 
-        category: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Category",
-            required: true
-        },
+        products: [
+            {
+                type: mongoose.Types.ObjectId,
+                ref: "Product",
+                required: true
+            }
+        ],
 
         promoType: {
             type: String,
             enum: ["seasonal", "discounted", "new", "clearance"],
             required: true
-        },
-
-        redirectUrl: {
-            type: String
         },
 
         expiresAt: {
