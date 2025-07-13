@@ -17,6 +17,7 @@ import wishListRouter from "./src/routers/wishList.route.js";
 import featureBannerRouter from "./src/routers/featureBanner.route.js";
 
 import { errorHandler } from "./src/middlewares/error.handler.js";
+import { startCronJobs } from "./src/utils/cronsJobs.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -69,6 +70,7 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await connectDB();
+    startCronJobs()
     app.listen(PORT, () => {
       console.log(`The server is running at http://localhost:${PORT}`);
     });

@@ -18,7 +18,6 @@ export const makePayment = async (req, res, next) => {
     // const origin = req.headers.origin;
     const user = req.userData;
     const cart = await findCart(user._id);
-    console.log(cart)
     if (!cart || cart.cartItems.length === 0) {
       return res.status(400).json({ status: "error", message: "Cart is empty" });
     }
@@ -107,6 +106,19 @@ export const verifyPaymentSession = async (req, res) => {
       });
     }
 
+    // Avoid duplicate order creation
+    const existingOrder = await getOrderDB({ paymentIntent })
+    console.log(existingOrder, "Existing Order")
+
+    if (existingOrder.length > 0) {
+      return res.json({
+        verified: session.payment_status === "paid",
+        status: session.payment_status,
+        session,
+        order: existingOrder[0],
+      });
+    }
+
     detailedLineItems = await Promise.all(
       cart.data.map(async item => {
         const price = await stripe.prices.retrieve(item.price.id);
@@ -138,20 +150,26 @@ export const verifyPaymentSession = async (req, res) => {
     // Stock update block: fail early and refund if stock issue
     for (let i of detailedLineItems) {
       const product = await getSingleProduct(i._id)
-
+      console.log(product)
       if (!product) {
         return res.status(400).json({ status: "error", message: `Product not found in DB.` });
       }
 
       const updateProduct = await ProductSchema.findOneAndUpdate(
         { _id: product._id, stock: { $gte: i.quantity } },
-        { $inc: { stock: -i.quantity } },
+        { $inc: { stock: -Number(i.quantity) } },
         { new: true }
       )
-      console.log(updateProduct, i.quantity)
+      console.log(updateProduct, "Updated")
+
+      console.log("Deducting stock:", {
+        productId: product._id,
+        currentStock: product.stock,
+        orderQty: i.quantity,
+      });
+
 
       if (!updateProduct) {
-        // Safe refund in case of insufficient stock
         try {
           const refund = await stripe.refunds.create({ payment_intent: paymentIntent });
           return res.status(400).json({
@@ -172,18 +190,6 @@ export const verifyPaymentSession = async (req, res) => {
       if (updateProduct.stock <= 0) {
         await updateProductDB(updateProduct._id, { status: "inactive" })
       }
-    }
-
-    // Avoid duplicate order creation
-    const existingOrder = await getOrderDB({ paymentIntent })
-
-    if (existingOrder.length > 0) {
-      return res.json({
-        verified: session.payment_status === "paid",
-        status: session.payment_status,
-        session,
-        order: existingOrder[0],
-      });
     }
 
     const order = await createOrderDB({
