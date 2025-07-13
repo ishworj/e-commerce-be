@@ -11,3 +11,7 @@ export const fetchFeatureBanner = () => {
 export const deleteFeatureBanner = (id) => {
     return FeatureBannerModel.findByIdAndDelete(id)
 }
+
+export const updateFeatureBanner = (id, updateObj) => {
+    return FeatureBannerModel.findOneAndUpdate({ _id: id }, updateObj, { new: true })
+}
