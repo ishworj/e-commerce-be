@@ -81,8 +81,12 @@ export const updateFeatureBannerController = async (req, res, next) => {
     try {
         const products = JSON.parse(req.body.products)
         const updateObj = { ...req.body, products }
-        console.log(updateObj, 8349398)
-        console.log(req.body)
+
+        // Handle file uploads
+        if (req.file?.path) {
+            updateObj.featureBannerImgUrl = req.file.path;
+        }
+
         const update = await updateFeatureBanner(req.params.id, updateObj)
         console.log(update)
         return res.status(200).json({

@@ -8,6 +8,6 @@ const router = express.Router()
 router.get("/", fetchFeatureBannerController)
 router.post("/", authenticate, isAdmin, upload.single("featureBannerImgUrl"), createFeatureBannerController)
 router.delete("/:id", authenticate, isAdmin, deleteFeatureBannerController)
-router.put("/:id", authenticate, isAdmin, updateFeatureBannerController)
+router.put("/:id", authenticate, isAdmin, upload.single("featureBannerImgUrl"), updateFeatureBannerController)
 
 export default router

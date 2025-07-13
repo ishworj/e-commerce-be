@@ -6,7 +6,7 @@ import multer from "multer";
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "E-Commerce", // optional folder name
+    folder: "E-Commerce",
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
   },
 });
