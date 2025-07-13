@@ -1,6 +1,7 @@
 import {
   createNewPoductDB,
   deleteProductDB,
+  getActivePoductsDB,
   getAllPoductsDB,
   getSingleProduct,
   updateProductDB,
@@ -191,7 +192,7 @@ export const deleteProduct = async (req, res, next) => {
 // get all the active products
 export const getActiveProduct = async (req, res, next) => {
   try {
-    const products = await getAllPoductsDB()
+    const products = await getActivePoductsDB()
     return res.json({
       status: "success",
       message: "Product fetched successfully",

@@ -36,6 +36,11 @@ const FeatureBannerSchema = new mongoose.Schema(
             type: Date,
             required: true
         },
+        status: {
+            type: String,
+            enum: ["active", "inactive"],
+            default: "inactive"
+        }
     }
 
 )
