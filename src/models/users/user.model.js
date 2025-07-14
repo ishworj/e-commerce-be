@@ -10,6 +10,10 @@ export const getUserByEmail = (email) => {
   return UserSchema.findOne(email);
 };
 
+export const getUsersForTimeFrame = (startTime, endTime) => {
+  return UserSchema.find({ createdAt: { $gte: new Date(startTime), $lt: new Date(endTime) } });
+};
+
 //update user
 export const updateUser = (filter, obj) => {
   return UserSchema.findOneAndUpdate(filter, { $set: obj }, { new: true });
