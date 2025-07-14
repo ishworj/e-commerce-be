@@ -5,5 +5,5 @@ export const insertSession = (token) => {
 };
 
 export const findToken = (token) => {
-    return SessionSchema.findOne(token);
+    return SessionSchema.findOne({ token });
 };
