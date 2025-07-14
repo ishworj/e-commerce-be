@@ -32,7 +32,7 @@ if (process.env.NODE_ENV !== "production") {
 // Run server here
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173", "https://k6hb8b9f-5173.aue.devtunnels.ms/"];
+const allowedOrigins = ["http://localhost:5173", "https://e-commerce-fe-sage.vercel.app"];
 app.use(
   cors({
     origin: function (origin, callback) {
