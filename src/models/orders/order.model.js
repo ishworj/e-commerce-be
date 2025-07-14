@@ -12,6 +12,10 @@ export const getAllOrderDB = () => {
     return OrderSchema.find();
 };
 
+export const getOrdersForTimeFrame = (startTime, endTime) => {
+    return OrderSchema.find({ createdAt: { $gte: new Date(startTime), $lt: new Date(endTime) } });
+};
+
 export const updateOrderDB = (_id, updateObj) => {
     // console.log(updateObj, 999)
     return OrderSchema.findByIdAndUpdate(_id, { $set: updateObj }, {

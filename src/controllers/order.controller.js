@@ -5,6 +5,7 @@ import {
     getAllOrderDB,
     getOneOrderDB,
     getOrderDB,
+    getOrdersForTimeFrame,
     updateOrderDB,
 } from "../models/orders/order.model.js";
 import Order from "../models/orders/order.schema.js";
@@ -13,26 +14,7 @@ import { findUserById } from "../models/users/user.model.js";
 import { deliveredOrderEmail, shipOrderEmail } from "../services/email.service.js";
 import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
 
-// export const createOrder = async (req, res, next) => {
-//     try {
-//         req.body.userId = req.userData._id;
-//         console.log(req.userData)
-//         req.body.status = "pending";
-//         const order = await createOrderDB(req.body)
-
-//         res.status(201).json({
-//             status: "success",
-//             message: "Finalised your order successfully...",
-//             order,
-//         });
-//     } catch (error) {
-//         return next({
-//             message: "Error while creating order",
-//             errorMessage: error.message,
-//         });
-//     }
-// };
-
+// with pagination 
 export const getOrder = async (req, res, next) => {
     try {
         const orders = await getPaginatedDataFilter(Order, req, { userId: req.userData._id })
@@ -48,10 +30,29 @@ export const getOrder = async (req, res, next) => {
         });
     }
 };
-
+// with pagination 
 export const getAllOrders = async (req, res, next) => {
     try {
         const orders = await getPaginatedData(Order, req)
+        res.status(200).json({
+            status: "success",
+            message: "All orders are here!",
+            orders,
+        });
+    } catch (error) {
+        next({
+            message: "Error while listing  All orders",
+            errorMessage: error.message,
+        });
+    }
+};
+// with out pagination and collecting orders acc to the time Frame
+export const getAllOrdersTimeFrame = async (req, res, next) => {
+    try {
+        console.log(req.query)
+        const orders = await getOrdersForTimeFrame(req.query.startTime, req.query.endTime)
+
+        console.log(orders)
         res.status(200).json({
             status: "success",
             message: "All orders are here!",
@@ -155,3 +156,23 @@ export const deleteOrderItem = async (req, res, next) => {
         });
     }
 }
+
+// export const createOrder = async (req, res, next) => {
+//     try {
+//         req.body.userId = req.userData._id;
+//         console.log(req.userData)
+//         req.body.status = "pending";
+//         const order = await createOrderDB(req.body)
+
+//         res.status(201).json({
+//             status: "success",
+//             message: "Finalised your order successfully...",
+//             order,
+//         });
+//     } catch (error) {
+//         return next({
+//             message: "Error while creating order",
+//             errorMessage: error.message,
+//         });
+//     }
+// };
