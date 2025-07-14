@@ -1,6 +1,7 @@
 import express from "express";
 import {
   deleteUserController,
+  getAllUsersTimeFrame,
   getUserDetailController,
   logoutUserController,
   registerUserController,
@@ -27,6 +28,9 @@ router.post("/signin", singinUserValidator, signInUserController);
 
 // get user detail
 router.get("/", authenticate, getUserDetailController);
+
+// get users
+router.get("/timeFrame", authenticate, isAdmin, getAllUsersTimeFrame);
 
 //update user
 router.put("/", authenticate, updateUserController);

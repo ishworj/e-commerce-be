@@ -6,7 +6,8 @@ export const authenticate = async (req, res, next) => {
 
     try {
         // 1.get the token from the headers
-        const token = req.headers.authorization;
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
         if (!token) {
             return res.status(401).json({
                 status: "error",
@@ -14,7 +15,7 @@ export const authenticate = async (req, res, next) => {
             });
         }
         // 2.get the token from the database
-        const tokenFromDb = await findToken({ token: token });
+        const tokenFromDb = await findToken(token);
         if (!tokenFromDb) {
             return res.status(401).json({
                 status: "error",
@@ -22,9 +23,9 @@ export const authenticate = async (req, res, next) => {
                 errorMessage: "Token not found in the database"
             });
         }
-
         // 3.verify the token
-        const decodedData = await jwtVerify(token, tokenFromDb);
+        // const decodedData = await jwtVerify(token, tokenFromDb);
+        const decodedData = await jwtVerify(tokenFromDb.token);
 
         // 4.decode the data in case of verified
         // this email is inside the decoded data because user email was used while creating the token during the sign in
@@ -55,14 +56,12 @@ export const authenticate = async (req, res, next) => {
 };
 export const refreshAuthenticate = async (req, res, next) => {
     try {
-        // take the token from the header as authorization
-        const token = req.headers.authorization;
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
+
         console.log(token)
         // verify the refreshtoken
-        const decodedData = await refreshJWTVerify(
-            token,
-            process.env.JWT_REFRESH_SECRET
-        );
+        const decodedData = await refreshJWTVerify(token);
         console.log(decodedData, "decodedata")
         // checking if the token gets verified and if there is token
         if (decodedData?.email) {
@@ -75,6 +74,7 @@ export const refreshAuthenticate = async (req, res, next) => {
                     message: "Not Authenticated !!!",
                 });
             }
+            console.log(req.user, 9999)
             req.user = userData;
             next();
         } else {
@@ -92,7 +92,9 @@ export const refreshAuthenticate = async (req, res, next) => {
     }
 };
 export const isAdmin = (req, res, next) => {
-    if (req.userData?.role === "admin") {
+    req.user = req.userData || req.user;
+
+    if (req.user?.role === "admin") {
         return next();
     } else {
         return next({
