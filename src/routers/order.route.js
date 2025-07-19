@@ -6,6 +6,7 @@ import {
     getAllOrders,
     getAllOrdersTimeFrame,
     getOrder,
+    getSalesTimeFrame,
     updateOrder,
 } from "../controllers/order.controller.js";
 import { authenticate, isAdmin } from "../middlewares/auth.middleware.js";
@@ -21,6 +22,8 @@ router.get("/", authenticate, getOrder);
 router.get("/admin", authenticate, isAdmin, getAllOrders);
 
 router.get("/timeFrame", authenticate, isAdmin, getAllOrdersTimeFrame)
+
+router.get("/report", authenticate, isAdmin, getSalesTimeFrame)
 
 router.put("/", authenticate, isAdmin, updateOrderValidator, updateOrder);
 
