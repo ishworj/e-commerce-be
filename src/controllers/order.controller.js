@@ -6,6 +6,7 @@ import {
     getOneOrderDB,
     getOrderDB,
     getOrdersForTimeFrame,
+    getSalesTimeFrameApi,
     updateOrderDB,
 } from "../models/orders/order.model.js";
 import Order from "../models/orders/order.schema.js";
@@ -156,6 +157,25 @@ export const deleteOrderItem = async (req, res, next) => {
         });
     }
 }
+
+export const getSalesTimeFrame = async (req, res, next) => {
+    try {
+        console.log(req.query)
+        const sales = await getSalesTimeFrameApi(req.query.startTime, req.query.endTime, req.query.granularity)
+
+        console.log(sales)
+        res.status(200).json({
+            status: "success",
+            message: "All sales are here!",
+            sales,
+        });
+    } catch (error) {
+        next({
+            message: "Error while listing  All sales",
+            errorMessage: error.message,
+        });
+    }
+};
 
 // export const createOrder = async (req, res, next) => {
 //     try {

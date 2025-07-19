@@ -43,13 +43,13 @@ export const makePayment = async (req, res, next) => {
       line_items,
       customer_email: user.email,
       mode: "payment",
-      // success_url:
-      //   "http://localhost:5173/payment-result?success=true&session_id={CHECKOUT_SESSION_ID}",
-      // cancel_url:
-      //   "http://localhost:5173/payment-result?success=false&session_id={CHECKOUT_SESSION_ID}",
+      success_url:
+        "http://localhost:5173/payment-result?success=true&session_id={CHECKOUT_SESSION_ID}",
+      cancel_url:
+        "http://localhost:5173/payment-result?success=false&session_id={CHECKOUT_SESSION_ID}",
 
-      success_url: `${origin}?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}?success=false&session_id={CHECKOUT_SESSION_ID}`,
+      // success_url: `${origin}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      // cancel_url: `${origin}?success=false&session_id={CHECKOUT_SESSION_ID}`,
     });
 
     // Send the session URL
@@ -80,6 +80,7 @@ export const verifyPaymentSession = async (req, res) => {
 
   let detailedLineItems = []
   let orderVerified = false
+  console.log("Verifying")
   try {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
@@ -146,7 +147,7 @@ export const verifyPaymentSession = async (req, res) => {
     }
 
     const { shippingAddress, userId } = req.body
-
+    console.log(req.body)
     // Stock update block: fail early and refund if stock issue
     for (let i of detailedLineItems) {
       const product = await getSingleProduct(i._id)
