@@ -9,11 +9,6 @@ const OrderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    paymentIntent: {
-      type: String,
-      required: true,
-      unique: true
-    },
     products: [
       {
         _id: {
@@ -34,7 +29,7 @@ const OrderSchema = new mongoose.Schema(
           type: Number,
           min: 1
         },
-        amount_total: {
+        totalAmount: {
           type: Number,
           min: 1,
         },
@@ -44,7 +39,7 @@ const OrderSchema = new mongoose.Schema(
     ],
     status: {
       type: String,
-      enum: ["pending", "shipped", "delivered"],
+      enum: ["pending", "confirmed", "shipped", "delivered"],
     },
     totalAmount: {
       type: Number,
@@ -59,7 +54,14 @@ const OrderSchema = new mongoose.Schema(
     invoiceId: {
       type: mongoose.Types.ObjectId,
       ref: "Invoice"
-    }
+    },
+    paymentDetails: {
+      id: String,
+      amount: Number,
+      status: String,
+      client_secret: String,
+      payment_method: String,
+    },
   },
   { timestamps: true }
 );
