@@ -83,7 +83,7 @@ export const orderCreated = ({ userName, email, order, attachments = [] }) => {
                 </td>
                 <td style="padding: 8px;">${item.name}</td>
                 <td style="padding: 8px; text-align: center;">${item.quantity}</td>
-                <td style="padding: 8px; text-align: right;">$${(item.amount_total / 100).toFixed(2)}</td>
+                <td style="padding: 8px; text-align: right;">$${(item.totalAmount).toFixed(2)}</td>
               </tr>`
         )
         .join("")}

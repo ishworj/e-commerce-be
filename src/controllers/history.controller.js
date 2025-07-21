@@ -106,19 +106,18 @@ export const pickedProductsController = async (req, res, next) => {
             clickedCategoryMap[categoryId] = (clickedCategoryMap[categoryId] || 0) + 1
             clickedProductSet.add(productId)
         }
-        console.log(clickedCategoryMap)
-        console.log(clickedProductSet)
 
         // sorting the categories acc to the count 
         const sortedCategories = Object.keys(clickedCategoryMap).sort((a, b) => clickedCategoryMap[b] - clickedCategoryMap[a])
 
         const recommendedProduct = [];
 
-        const products = await Promise.all(sortedCategories.map(item => getProductWithFilter({ category: item })))
+        const products = await Promise.all(sortedCategories.map(item => getProductWithFilter({ category: item, status: "active" })))
 
         const flatProducts = products.flat()
 
         const filteredProducts = await flatProducts.filter((item) => !clickedProductSet.has(item._id))
+
         recommendedProduct.push(...filteredProducts)
 
         // deduplication the product list 
