@@ -18,9 +18,9 @@ export const createCartController = async (req, res, next) => {
         // finding the detail of the product
         const productResponse = await getSingleProduct(_id);
         const { price } = productResponse;
-        const costPrice = (price * quantity);
+        const totalAmount = (price * quantity);
         // console.log(costPrice)
-        const product = { quantity: quantity ?? 1, price, costPrice, ...productResponse._doc }
+        const product = { quantity: quantity ?? 1, price, totalAmount, ...productResponse._doc }
 
         const existingCart = await findCart(userId)
         if (!existingCart) {
@@ -130,7 +130,7 @@ export const updateCartItems = async (req, res, next) => {
 
         const product = {
             quantity,
-            costPrice: totalPrice
+            totalAmount: totalPrice
         }
         const response = await updateCartItem(userId, _id, product)
         return res.status(200).json({

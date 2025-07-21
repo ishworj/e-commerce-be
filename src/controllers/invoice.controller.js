@@ -13,6 +13,7 @@ export const generateRandomInvoiceNumber = () => {
     }
     return invoiceNumber;
 }
+
 export const createInvoiceController = async (req, res, next) => {
     try {
         const id = req.params.id;
@@ -53,7 +54,7 @@ export const createInvoiceController = async (req, res, next) => {
                     id: key.id,
                     name: key.name,
                     quantity: key.quantity,
-                    amount_total: key.amount_total,
+                    amount_total: key.totalAmount,
                     productImages: key.productImages || []
                 })),
                 notes: order.notes || ""

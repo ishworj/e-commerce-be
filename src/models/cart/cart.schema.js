@@ -15,7 +15,7 @@ const CartItemSchema = new Schema({
         type: Number,
         required: true
     },
-    costPrice: {
+    totalAmount: {
         type: Number,
         required: true
     },
