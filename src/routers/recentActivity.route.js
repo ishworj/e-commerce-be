@@ -8,7 +8,7 @@ router.post("/", authenticate, createRecentActivityController)
 
 router.get("/", authenticate, isAdmin, getAllRecentActivityController)
 
-router.get("/user", authenticate, getUserRecentActivityController)
+router.post("/user", authenticate, getUserRecentActivityController)
 
 
 export default router;

@@ -12,7 +12,7 @@ const recentActivitySchema = new mongoose.Schema({
     },
     action: {
         type: String,
-        enum: ["userRegistration", "userUpdated", "orderPlaced", "orderDeleted", "orderDelivered", "orderShipped", "orderUpdated", "productAdded", "productDeleted", "productUpdated", "bannerCreated", "bannerDeleted", "bannerUpdated", "productReviewed", "reviewUpdated"],
+        enum: ["userRegistration", "userUpdated", "orderPlaced", "orderDeleted", "orderDelivered", "orderShipped", "orderUpdated", "productAdded", "productDeleted", "productUpdated", "bannerCreated", "bannerDeleted", "bannerUpdated", "productReviewed", "reviewUpdated", "categoryCreated", "categoryUpdated", "categoryDeleted"],
         required: true
     },
     entityId: {

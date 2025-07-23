@@ -49,7 +49,8 @@ export const getAllRecentActivityController = async (req, res, next) => {
 // (pagination)
 export const getUserRecentActivityController = async (req, res, next) => {
     try {
-        const { page, userId } = req.query
+        const { page } = req.query
+        const { userId } = req.body
 
         const pageNum = parseInt(page, 10);
         const currentPage = (!isNaN(pageNum) && pageNum > 0) ? pageNum : 1;
