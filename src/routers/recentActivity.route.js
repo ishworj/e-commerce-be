@@ -4,7 +4,7 @@ import { authenticate, isAdmin } from "../middlewares/auth.middleware.js"
 
 const router = express.Router()
 
-router.post("/", authenticate, createRecentActivityController)
+router.post("/", createRecentActivityController)
 
 router.get("/", authenticate, isAdmin, getAllRecentActivityController)
 

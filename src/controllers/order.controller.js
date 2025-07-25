@@ -98,6 +98,7 @@ export const updateOrder = async (req, res, next) => {
             status: "success",
             message: "Order updated!",
             orderUpdated,
+            user
         });
     } catch (error) {
         console.log(error?.message)
@@ -111,7 +112,11 @@ export const updateOrder = async (req, res, next) => {
 export const deleteOrder = async (req, res, next) => {
     try {
         const { id } = req.params;
+        const order = await getOneOrderDB(id);
+        const user = await findUserById(order.userId)
+
         const response = await deleteOrderDB(id);
+
         if (!id) {
             return res.status(404).json({
                 status: "error",
@@ -121,7 +126,7 @@ export const deleteOrder = async (req, res, next) => {
         return res.status(200).json({
             status: "success",
             message: "Order Cancelled!",
-            response
+            response, user
         })
     } catch (error) {
         next({

@@ -3,6 +3,7 @@ import { createRecentActivity, getRecentActivity, getRecentActivityForUser } fro
 export const createRecentActivityController = async (req, res, next) => {
     try {
         const obj = req.body
+        //  i am not being able to optimise by sending the user detail from the Be because i cannot use authenticate middleware as i need the activity to be tracked when the user registers as well 
         const data = await createRecentActivity(obj)
 
         return res.status(200).json({
@@ -50,7 +51,7 @@ export const getAllRecentActivityController = async (req, res, next) => {
 export const getUserRecentActivityController = async (req, res, next) => {
     try {
         const { page } = req.query
-        const { userId } = req.body
+        const { v } = req.body
 
         const pageNum = parseInt(page, 10);
         const currentPage = (!isNaN(pageNum) && pageNum > 0) ? pageNum : 1;
