@@ -23,7 +23,7 @@ const FeatureBannerSchema = new mongoose.Schema(
 
         promoType: {
             type: String,
-            enum: ["seasonal", "discounted", "new", "clearance"],
+            enum: ["New", "seasonal", "discounted", "clearance"],
             required: true
         },
 
