@@ -392,21 +392,22 @@ export const createOrder = async (req, res, next) => {
       paymentDetails: paymentIntent
     })
 
+    console.log(order, cart)
     // creating the invoice
     const invoice = await invoiceCreation(order, user, userId)
-    console.log(invoice, 888)
 
     // Send confirmation email with PDF invoice
     await sendConfirmationEmail(user, order, invoice)
 
     orderVerified = true
-    return res.json({
-      verified: true,
+    return res.status(200).json({
+      verified: orderVerified,
       message: "Verified!",
       order
     });
 
   } catch (error) {
+    console.log(error?.message)
     next({
       statusCode: 500,
       message: "Order Creation Failed!",
@@ -490,7 +491,7 @@ const invoiceCreation = async (order, user, userId) => {
         name: key.name,
         quantity: key.quantity,
         totalAmount: key.totalAmount,
-        productImages: key.productImages || []
+        productImages: key.images || []
       })),
       notes: order.notes || ""
     });
@@ -520,14 +521,3 @@ const sendConfirmationEmail = async (user, order, invoice) => {
   });
 
 }
-
-
-
-// processes
-// step 1: Check the order price and the qauantity adn reduce the quantity from the DB ------------------ price checking is remaining
-// step 2: process the payemtn with the stripe and confirm the payment with stripe ------------------ done
-// setp 3: if payemnt processing successfull then use the cart and payment detail to create the new order in DB ------------------ done
-// step 4: if the quantity is not enough or the price has been changed then response error from Step 1 ------------------ done
-// step 5: if payment failed , rollback the quantity ------------------
-// step 6 : if everything ok then create new order in DB and response in FE success and FE will navigate to THank You page and show the order detail and the address ------------------
-//  step 7: SEnd the order confirmation mail with the order detail to the user ------------------

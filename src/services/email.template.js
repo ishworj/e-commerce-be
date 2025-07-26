@@ -79,7 +79,7 @@ export const orderCreated = ({ userName, email, order, attachments = [] }) => {
           (item) => `
               <tr style="border-bottom: 1px solid #ddd;">
                 <td style="padding: 8px;">
-                  <img src="${item.productImages[0]}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                  <img src="${item.images[0]}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
                 </td>
                 <td style="padding: 8px;">${item.name}</td>
                 <td style="padding: 8px; text-align: center;">${item.quantity}</td>
