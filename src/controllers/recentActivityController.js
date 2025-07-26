@@ -21,6 +21,37 @@ export const createRecentActivityController = async (req, res, next) => {
     }
 }
 
+export const createRecentActivityControllerWithAuthentication = async (req, res, next) => {
+    try {
+        const obj = req.body
+        const user = req.userData
+
+        if (!user || !user._id) {
+            return next({
+                statusCode: 401,
+                errorMessage: "Unauthorized",
+                message: "User authentication required"
+            });
+        }
+
+
+        const data = await createRecentActivity({ ...obj, userDetail: { userId: user?._id, userName: user?.fName + " " + user?.lName } })
+
+        return res.status(201).json({
+            status: "success",
+            message: "Recent Activity Created!",
+            data
+        })
+    } catch (error) {
+        console.log(error?.message)
+        return next({
+            statusCode: 500,
+            errorMessage: error?.message,
+            message: "Activity Creation Failed"
+        })
+    }
+}
+
 // (pagination)
 export const getAllRecentActivityController = async (req, res, next) => {
     try {
