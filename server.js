@@ -15,6 +15,7 @@ import invoiceRouter from "./src/routers/invoice.route.js";
 import historyRouter from "./src/routers/history.route.js";
 import wishListRouter from "./src/routers/wishList.route.js";
 import featureBannerRouter from "./src/routers/featureBanner.route.js";
+import recentActivityRouter from "./src/routers/recentActivity.route.js";
 
 import { errorHandler } from "./src/middlewares/error.handler.js";
 import { startCronJobs } from "./src/utils/cronsJobs.js";
@@ -73,6 +74,7 @@ app.use("/api/v1/invoice", invoiceRouter);
 app.use("/api/v1/history", historyRouter);
 app.use("/api/v1/wishlist", wishListRouter);
 app.use("/api/v1/featureBanner", featureBannerRouter);
+app.use("/api/v1/recentActivity", recentActivityRouter)
 
 // verifying error
 app.use("/verify-user", verifyEmailRouter);

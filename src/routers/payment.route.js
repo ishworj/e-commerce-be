@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get("/checkout", authenticate, initiatePayment);
 
-router.post("/verify-session", createOrder);
+router.post("/verify-session", authenticate, createOrder);
 
 router.get("/", authenticate, stockHandling)
 
