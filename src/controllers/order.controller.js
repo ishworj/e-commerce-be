@@ -11,7 +11,7 @@ import Order from "../models/orders/order.schema.js";
 
 import { findUserById } from "../models/users/user.model.js";
 import { shipOrderEmail } from "../services/email.service.js";
-import { getPaginatedData, getPaginatedDataFilter } from "../utils/Pagination.js";
+import { getPaginatedDataFilter, getPaginatedOrderData } from "../utils/Pagination.js";
 
 // with pagination 
 export const getOrder = async (req, res, next) => {
@@ -32,7 +32,7 @@ export const getOrder = async (req, res, next) => {
 // with pagination 
 export const getAllOrders = async (req, res, next) => {
     try {
-        const orders = await getPaginatedData(Order, req)
+        const orders = await getPaginatedOrderData(Order, req)
         res.status(200).json({
             status: "success",
             message: "All orders are here!",

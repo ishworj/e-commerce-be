@@ -36,6 +36,10 @@ export const getActivePoductsDB = (limit = 20) => {
 export const getSingleProduct = (id) => {
     return ProductSchema.findOne({ _id: id })
         .select("name price description images category stock ratings reviews")
+        .populate({
+            path: "reviews",
+            select: "productId productName productImage userId email userName userImage rating comment approved createdAt", // specify fields to keep payload lean
+        })
         .lean();
 };
 
