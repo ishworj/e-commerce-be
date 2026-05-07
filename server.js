@@ -20,81 +20,81 @@ import orderInquiryRouter from "./src/routers/orderInquiry.route.js";
 
 import { errorHandler } from "./src/middlewares/error.handler.js";
 import { startCronJobs } from "./src/utils/cronsJobs.js";
+import { apiLimiter } from "./src/services/rateLimiter.js";
 
-import { rateLimit } from "express-rate-limit";
-const app = express();
 const PORT = process.env.PORT;
+if (!PORT) {
+  console.error("PORT environment variable is required");
+  process.exit(1);
+}
 
-// log middleware
+const defaultOrigins = [
+  "http://localhost:5173",
+  "https://e-commerce-fe-sage.vercel.app",
+];
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  : defaultOrigins;
+
+const app = express();
+
+if (process.env.TRUST_PROXY === "1" || process.env.TRUST_PROXY === "true") {
+  app.set("trust proxy", 1);
+}
+
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  next();
+});
+
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 } else {
   app.use(morgan("combined"));
 }
 
-// Run server here
 app.use(express.json());
-
-const allowedOrigins = ["http://localhost:5173", "https://e-commerce-fe-sage.vercel.app"];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // allow server-to-server requests without origin
+    origin(origin, callback) {
       if (!origin) return callback(null, true);
-
-      // check if origin is allowed
       if (allowedOrigins.includes(origin)) {
-        return callback(null, origin); // must return origin when using credentials
+        return callback(null, origin);
       }
-
-      // block if not allowed
       return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true, // allow cookies
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allowed HTTP methods
-    allowedHeaders: ["Content-Type", "Authorization"], // allowed headers
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// Explicitly handle preflight OPTIONS requests
 app.options("*", cors());
-// Global rate limiter: 100 requests per 15 minutes per IP
-// rate limiter
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  limit: 100, 
-  standardHeaders: "draft-8",
-  legacyHeaders: false, 
-  ipv6Subnet: 56
-});
 
-// Apply the rate limiting middleware to all requests.
-app.use(limiter);
+app.use("/api/v1/auth", apiLimiter, authRouter);
+app.use("/api/v1/review", apiLimiter, reviewRouter);
+app.use("/api/v1/orders", apiLimiter, orderRouter);
+app.use("/api/v1/cart", apiLimiter, cartRouter);
+app.use("/api/v1/payment", apiLimiter, paymentRouter);
+app.use("/api/v1/wishlist", apiLimiter, wishListRouter);
+app.use("/verify-user", apiLimiter, verifyEmailRouter);
 
-// routers
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/products", productRouter);
-app.use("/api/v1/category", categoryRouter);
-app.use("/api/v1/review", reviewRouter);
-app.use("/api/v1/orders", orderRouter);
-app.use("/api/v1/cart", cartRouter);
-app.use("/api/v1/payment", paymentRouter);
-app.use("/api/v1/chat", chatRouter);
-app.use("/api/v1/invoice", invoiceRouter);
-app.use("/api/v1/history", historyRouter);
-app.use("/api/v1/wishlist", wishListRouter);
-app.use("/api/v1/featureBanner", featureBannerRouter);
-app.use("/api/v1/recentActivity", recentActivityRouter)
-app.use("/api/v1/inquiry", orderInquiryRouter)
+app.use("/api/v1/products", apiLimiter, productRouter);
+app.use("/api/v1/category", apiLimiter, categoryRouter);
+app.use("/api/v1/chat", apiLimiter, chatRouter);
+app.use("/api/v1/invoice", apiLimiter, invoiceRouter);
+app.use("/api/v1/history", apiLimiter, historyRouter);
+app.use("/api/v1/featureBanner", apiLimiter, featureBannerRouter);
+app.use("/api/v1/recentActivity", apiLimiter, recentActivityRouter);
+app.use("/api/v1/inquiry", apiLimiter, orderInquiryRouter);
 
-// verifying error
-app.use("/verify-user", verifyEmailRouter);
-
-// error handler
 app.use(errorHandler);
 
-// listen the server
 const startServer = async () => {
   try {
     await connectDB();
@@ -104,7 +104,6 @@ const startServer = async () => {
       console.log(`Server running at http://localhost:${PORT}`);
     });
 
-    // Start cron jobs asynchronously with delay
     setTimeout(async () => {
       try {
         await startCronJobs();
@@ -113,7 +112,6 @@ const startServer = async () => {
         console.error("Error starting cron jobs", err);
       }
     }, 5000);
-
   } catch (error) {
     console.log("SERVER failed to run", error);
   }
